@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "IMDB Spotter",
+  "description": "This extension lets you create Spotify playlists of movie soundtracks.",
+  "version": "0.0.0.1",
+  "permissions": [
+    "tabs", "storage", "contextMenus", "*://*.imdb.com/*"
+  ],
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "matches": ["*://*.imdb.com/*"],
+      "js": ["jquery-2.0.3.min.js", "content_script.js"]
+    }
+  ],
+  "options_page": "options.html",
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+  "browser_action": {
+    "default_icon": "icon48.png",
+    "default_popup": "popup.html",
+    "default_title": "Get movie soundtrack"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
