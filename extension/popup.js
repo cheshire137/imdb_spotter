@@ -179,13 +179,15 @@ var imdb_spotter_popup = {
 
   get_imdb_soundtrack: function(imdb_id) {
     var url = 'http://www.imdb.com/title/' + imdb_id + '/soundtrack';
+    $('#movie-link').attr('href', url).click(function() {
+      chrome.tabs.create({url: url});
+      return false;
+    });
     var track_list = $('#track-list');
     var me = this;
     $.get(url, function(data) {
-      console.log(data);
       var page = $(data);
       var song_els = $('.soundTrack', data);
-      console.log(song_els);
       var tracks = [];
       song_els.each(function() {
         var song_el = $(this);
@@ -195,7 +197,6 @@ var imdb_spotter_popup = {
         var artist = me.get_artist(song_el);
         tracks.push({title: title, artist: artist});
       });
-      console.log(tracks);
       me.populate_popup(tracks);
     });
   },

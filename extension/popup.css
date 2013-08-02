@@ -99,6 +99,10 @@ input[type="text"] {
   display: inline-block;
 }
 
+#movie-link {
+  display: block;
+}
+
 #movie-poster {
   float: left;
   max-width: 100px;
@@ -108,7 +112,6 @@ input[type="text"] {
 }
 
 #movie-title {
-  display: block;
   font-weight: bold;
 }
 
