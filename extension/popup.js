@@ -83,7 +83,7 @@ var imdb_spotter_popup = {
   },
 
   set_track_link: function(track, is_last, spotify_choice) {
-    var query = track.title + ' ' + track.artist;
+    var query = this.strip_punctuation(track.title) + ' ' + track.artist;
     var url = this.get_spotify_track_search_url(query);
     var me = this;
     $.getJSON(url, function(data) {
@@ -175,6 +175,11 @@ var imdb_spotter_popup = {
         return el.textContent;
       }
     })[0];
+  },
+
+  strip_punctuation: function(str) {
+    str = str.replace(/[\[\]\.,-\/#!$%"\^&\*;:{}=\-_`~()']/g, ' ');
+    return $.trim(str.replace(/\s+/g, ' '));
   },
 
   get_imdb_soundtrack: function(imdb_id) {
