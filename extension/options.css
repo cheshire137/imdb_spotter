@@ -1,0 +1,138 @@
+a, a:link, a:visited, a:active {
+  color: #4554B5;
+  text-decoration: underline;
+}
+
+a:hover, a:focus {
+  color: #EE662B;
+  text-decoration: none;
+}
+
+.alert {
+  color: #468847;
+  background-color: #dff0d8;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  margin: 14px 0;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  border: 1px solid #d6e9c6;
+  border-radius: 4px;
+}
+
+body {
+  padding: 10px;
+  background-color: #F8F8F8;
+  color: #373737;
+  min-width: 245px;
+  overflow-x: hidden;
+  font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  text-shadow: 0 1px 1px #fff;
+  font-size: 18px;
+  margin: 0;
+}
+
+.container {
+  margin: 2em 20%;
+  position: relative;
+}
+
+.controls {
+  margin-bottom: 14px;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+fieldset legend {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #999;
+  font-style: italic;
+}
+
+.footer {
+  font-size: 12px;
+  color: #888;
+  margin-top: 40px;
+}
+
+.footer a, .footer a:link,
+.footer a:visited, .footer a:active {
+  color: #999;
+  text-decoration: underline;
+}
+
+.footer a:hover, .footer a:focus {
+  text-decoration: none;
+  color: #666;
+}
+
+.footer span {
+  display: inline-block;
+  margin: 0 1em;
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 300;
+}
+
+h1 img, h1 span {
+  display: block;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.hidden {
+  display: none;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #fff;
+  margin: 10px 0;
+}
+
+label {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+label + label {
+  margin-left: 1.5em;
+}
+
+label input[type="radio"] {
+  vertical-align: middle;
+  margin-top: -1px;
+}
+
+.logo {
+  margin-right: 20px;
+}
+
+p.help-block {
+  font-size: 14px;
+  margin: 0 0 14px 0;
+  color: #777;
+}
+
+.pull-left {
+  float: left;
+}
+
+#status-message {
+  position: absolute;
+  width: 100%;
+  top: 2.3em;
+}
+
