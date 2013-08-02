@@ -17,13 +17,14 @@
 
 var imdb_spotter = {
   on_popup_opened: function(tab_id, callback) {
+    console.log('imdb spotter popup opened');
   }
 };
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   if (request.greeting == 'popup_opened') {
-    imdb_spotter.on_popup_opened(request.tab_id, function(data) {
-      sendResponse(data);
+    imdb_spotter.on_popup_opened(request.tab_id, function() {
+      sendResponse();
     });
   }
 });

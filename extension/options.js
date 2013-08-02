@@ -19,7 +19,7 @@ function save_options() {
   var spotify = $('input[name="spotify"]:checked').val();
   var status_area = $('#status-message');
   var options = {spotify: spotify};
-  chrome.storage.sync.set({'turntable_spotter_options': options}, function() {
+  chrome.storage.sync.set({'imdb_spotter_options': options}, function() {
     status_area.text('Okay, got it!').fadeIn(function() {
       setTimeout(function() {
         status_area.fadeOut();
@@ -29,8 +29,8 @@ function save_options() {
 }
 
 function restore_options() {
-  chrome.storage.sync.get('turntable_spotter_options', function(opts) {
-    opts = opts.turntable_spotter_options || {};
+  chrome.storage.sync.get('imdb_spotter_options', function(opts) {
+    opts = opts.imdb_spotter_options || {};
     if (opts.spotify) {
       var selector = 'input[name="spotify"][value="' + opts.spotify + '"]';
       $(selector).attr('checked', 'checked');

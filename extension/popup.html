@@ -13,7 +13,21 @@
         <img src="icon48.png" alt="IMDB Spotter" id="logo">
         IMDB Spotter
       </h1>
-      <a href="#open-tracklist" id="trackset-link" class="hidden">Open in Spotify</a>
+      <a href="#open-tracklist" id="trackset-link" class="hidden btn">Open in Spotify</a>
+      <form>
+        <input type="text" id="query" placeholder="movie title">
+        <input type="submit" id="submit" class="btn" value="Get Soundtrack">
+        <input type="text" id="year" placeholder="year (optional)">
+      </form>
+      <div id="movie-details-wrapper" class="hidden clearfix">
+        <img src="" id="movie-poster">
+        <span id="movie-title"></span>
+        <span id="movie-year"></span>
+        <span class="separator">&middot;</span>
+        <span id="movie-genre"></span>
+        <span class="separator">&middot;</span>
+        <span id="movie-rating"></span>
+      </div>
       <ul id="track-list">
       </ul>
       <footer>

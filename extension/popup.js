@@ -28,7 +28,7 @@ _gaq.push(['_trackPageview']);
   s.parentNode.insertBefore(ga, s);
 })();
 
-var turntable_spotter_popup = {
+var imdb_spotter_popup = {
   get_spotify_track_search_url: function(query) {
     return 'http://ws.spotify.com/search/1/track.json?q=' +
             encodeURIComponent(query);
@@ -151,16 +151,57 @@ var turntable_spotter_popup = {
   populate_popup: function(tracks) {
     this.populate_track_list(tracks);
     var me = this;
-    chrome.storage.sync.get('turntable_spotter_options', function(opts) {
-      opts = opts.turntable_spotter_options || {};
+    chrome.storage.sync.get('imdb_spotter_options', function(opts) {
+      opts = opts.imdb_spotter_options || {};
       var spotify_choice = opts.spotify || 'web_player';
       me.set_spotify_links(tracks, spotify_choice);
     });
   },
 
-  on_popup_opened: function(tracks) {
+  on_search: function() {
+    var query_field = $('#query');
+    var query = $.trim(query_field.val());
+    if (query == '') {
+      return;
+    }
+    var year_field = $('#year');
+    var year = $.trim(year_field.val());
+    var url = 'http://www.omdbapi.com/?t=' + encodeURIComponent(query);
+    if (year != '') {
+      url += '&y=' + encodeURIComponent(year);
+    }
+    $.getJSON(url, function(data) {
+      var wrapper = $('#movie-details-wrapper');
+      if (!data) {
+        wrapper.hide();
+        return;
+      }
+      $('#movie-title').text(data.Title);
+      $('#movie-genre').text(data.Genre);
+      $('#movie-rating').text(data.imdbRating);
+      $('#movie-year').text(data.Year);
+      if (data.Poster == 'N/A') {
+        $('#movie-poster').hide();
+      } else {
+        $('#movie-poster').attr('src', data.Poster).show();
+      }
+      wrapper.show();
+    });
+  },
+
+  setup_search_form: function() {
+    var me = this;
+    $('#submit').click(function() {
+      me.on_search();
+    });
+    $('form').submit(function(e) {
+      e.preventDefault();
+    });
+  },
+
+  on_popup_opened: function() {
     this.setup_options_link();
-    this.populate_popup(tracks);
+    this.setup_search_form();
   }
 };
 
@@ -169,8 +210,8 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.tabs.sendRequest(
       tab.id,
       {greeting: 'popup_opened', tab_id: tab.id},
-      function(tracks) {
-        turntable_spotter_popup.on_popup_opened(tracks);
+      function() {
+        imdb_spotter_popup.on_popup_opened();
       }
     );
   });
