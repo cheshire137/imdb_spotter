@@ -16,7 +16,7 @@
  */
 
 var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-42849115-1']);
+_gaq.push(['_setAccount', 'UA-42851748-1']);
 _gaq.push(['_trackPageview']);
 
 (function() {
@@ -169,12 +169,19 @@ var imdb_spotter_popup = {
     if (artist.length > 0) {
       return artist[0];
     }
-    return $.map(links, function(el) {
+    var artist = $.map(links, function(el) {
       var preceding_text = $.trim(el.previousSibling.nodeValue);
       if (preceding_text.indexOf('Written by') > -1) {
         return el.textContent;
       }
-    })[0];
+      if (preceding_text.indexOf('Music by') > -1) {
+        return el.textContent;
+      }
+    });
+    if (artist.length > 0) {
+      return artist[0];
+    }
+    return '';
   },
 
   strip_punctuation: function(str) {
@@ -194,13 +201,19 @@ var imdb_spotter_popup = {
       var page = $(data);
       var song_els = $('.soundTrack', data);
       var tracks = [];
+      var added_tracks = [];
       song_els.each(function() {
         var song_el = $(this);
         var title = $.map($('br', song_el), function(el) {
           return el.previousSibling.nodeValue;
         })[0];
         var artist = me.get_artist(song_el);
-        tracks.push({title: title, artist: artist});
+        var track = {title: title, artist: artist};
+        var track_str = title + ' ' + artist;
+        if (added_tracks.indexOf(track_str) == -1) {
+          tracks.push(track);
+          added_tracks.push(track_str);
+        }
       });
       me.populate_popup(tracks);
     });
