@@ -72,7 +72,7 @@ var imdb_spotter_popup = {
       }
       return false;
     });
-    link.show();
+    link.removeClass('hidden');
   },
 
   get_track_list_item: function(track) {
@@ -112,7 +112,7 @@ var imdb_spotter_popup = {
   },
 
   set_spotify_links: function(tracks, spotify_choice) {
-    $('a#trackset-link').hide();
+    $('a#trackset-link').addClass('hidden');
     var num_tracks = tracks.length;
     for (var i=0; i<num_tracks; i++) {
       this.set_track_link(tracks[i], i == num_tracks - 1, spotify_choice);
@@ -158,6 +158,48 @@ var imdb_spotter_popup = {
     });
   },
 
+  get_artist: function(song_el) {
+    var links = $('a', song_el);
+    var artist = $.map(links, function(el) {
+      var preceding_text = $.trim(el.previousSibling.nodeValue);
+      if (preceding_text.indexOf('Performed by') > -1) {
+        return el.textContent;
+      }
+    });
+    if (artist.length > 0) {
+      return artist[0];
+    }
+    return $.map(links, function(el) {
+      var preceding_text = $.trim(el.previousSibling.nodeValue);
+      if (preceding_text.indexOf('Written by') > -1) {
+        return el.textContent;
+      }
+    })[0];
+  },
+
+  get_imdb_soundtrack: function(imdb_id) {
+    var url = 'http://www.imdb.com/title/' + imdb_id + '/soundtrack';
+    var track_list = $('#track-list');
+    var me = this;
+    $.get(url, function(data) {
+      console.log(data);
+      var page = $(data);
+      var song_els = $('.soundTrack', data);
+      console.log(song_els);
+      var tracks = [];
+      song_els.each(function() {
+        var song_el = $(this);
+        var title = $.map($('br', song_el), function(el) {
+          return el.previousSibling.nodeValue;
+        })[0];
+        var artist = me.get_artist(song_el);
+        tracks.push({title: title, artist: artist});
+      });
+      console.log(tracks);
+      me.populate_popup(tracks);
+    });
+  },
+
   on_search: function() {
     var query_field = $('#query');
     var query = $.trim(query_field.val());
@@ -170,9 +212,10 @@ var imdb_spotter_popup = {
     if (year != '') {
       url += '&y=' + encodeURIComponent(year);
     }
+    var me = this;
     $.getJSON(url, function(data) {
       var wrapper = $('#movie-details-wrapper');
-      if (!data) {
+      if (!data || data.Response == 'False') {
         wrapper.hide();
         return;
       }
@@ -185,6 +228,7 @@ var imdb_spotter_popup = {
       } else {
         $('#movie-poster').attr('src', data.Poster).show();
       }
+      me.get_imdb_soundtrack(data.imdbID);
       wrapper.show();
     });
   },
