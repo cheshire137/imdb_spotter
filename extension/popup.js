@@ -112,7 +112,7 @@ var imdb_spotter_popup = {
   },
 
   set_spotify_links: function(tracks, spotify_choice) {
-    $('a#trackset-link').addClass('hidden');
+    $('a#trackset-link').unbind('click').addClass('hidden');
     var num_tracks = tracks.length;
     for (var i=0; i<num_tracks; i++) {
       this.set_track_link(tracks[i], i == num_tracks - 1, spotify_choice);
