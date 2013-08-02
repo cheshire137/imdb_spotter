@@ -260,6 +260,13 @@ var imdb_spotter_popup = {
     $('form').submit(function(e) {
       e.preventDefault();
     });
+    $('#query').keypress(function(e) {
+      if (e.which == 13) { // Enter
+        e.preventDefault();
+        me.on_search();
+        return false;
+      }
+    });
   },
 
   on_popup_opened: function() {
