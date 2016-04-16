@@ -4,9 +4,9 @@ Chrome extension for generating a Spotify playlist of movie soundtracks.
 
 ## Screenshots
 
-![Screenshot 1 of IMDB Spotter](http://github.com/moneypenny/imdb_spotter/raw/master/screenshot1.png)
+![Screenshot 1 of IMDB Spotter](https://raw.githubusercontent.com/cheshire137/imdb_spotter/master/screenshot1.png)
 
-![Screenshot 2 of IMDB Spotter](http://github.com/moneypenny/imdb_spotter/raw/master/screenshot2.png)
+![Screenshot 2 of IMDB Spotter](https://raw.githubusercontent.com/cheshire137/imdb_spotter/master/screenshot2.png)
 
 ## To-do List
 
