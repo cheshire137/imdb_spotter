@@ -14,7 +14,7 @@
   "license": "GPLv3",
   "scripts": {
     "test": "npm run-script style",
-    "style": "node_modules/xo/cli.js extension/content-script.js extension/options.js extension/popup.js extension/spotify-api.js"
+    "style": "node_modules/xo/cli.js extension/content-script.js extension/options.js extension/popup.js extension/spotify-api.js extension/local-storage.js"
   },
   "devDependencies": {
     "xo": "^0.15.1"
@@ -26,7 +26,8 @@
       "window",
       "$",
       "chrome",
-      "SpotifyApi"
+      "SpotifyApi",
+      "ImdbLocalStorage"
     ],
     "space": true,
     "rules": {

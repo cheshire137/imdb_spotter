@@ -124,6 +124,7 @@ const imdbSpotterPopup = {
 
     $.when.apply($, promises).then(() => {
       console.debug('finished fetching Spotify data')
+      this.toggleSearchFormDisabled(false)
       this.enableSpotifyButton(movieTitle, spotifyChoice)
     })
   },
@@ -262,7 +263,7 @@ const imdbSpotterPopup = {
       return
     }
 
-    const year = document.getElementById('year').value.trim()
+    const year = document.getElementById('year').value
 
     $.ajax({
       url: 'https://www.omdbapi.com',
@@ -277,6 +278,30 @@ const imdbSpotterPopup = {
   toggleSearchFormDisabled(disabled) {
     document.getElementById('submit').disabled = disabled
     document.getElementById('query').disabled = disabled
+    document.getElementById('year').disabled = disabled
+  },
+
+  loadFormData() {
+    const query = ImdbLocalStorage.get('query')
+    if (query && query.length > 0) {
+      document.getElementById('query').value = query
+    }
+
+    const year = ImdbLocalStorage.get('year')
+    if (year && year.length > 0) {
+      const select = document.getElementById('year')
+      const option = select.querySelector(`option[value="${year}"]`)
+      if (option) {
+        option.selected = 'selected'
+      }
+    }
+  },
+
+  saveFormData() {
+    const query = document.getElementById('query').value.trim()
+    const year = document.getElementById('year').value
+    ImdbLocalStorage.set('query', query)
+    ImdbLocalStorage.set('year', year)
   },
 
   onSearchSubmit(event) {
@@ -287,6 +312,7 @@ const imdbSpotterPopup = {
     document.getElementById('no-tracks-message').style.display = 'none'
     document.getElementById('no-spotify-tracks-message').style.display = 'none'
     this.toggleSearchFormDisabled(true)
+    this.saveFormData()
     this.searchImdbByTitle()
   },
 
@@ -316,6 +342,7 @@ const imdbSpotterPopup = {
   onPopupOpened() {
     console.debug('popup opened')
     this.populateYearsSelect()
+    this.loadFormData()
     this.setupOptionsLink()
     this.setupSearchForm()
   }
