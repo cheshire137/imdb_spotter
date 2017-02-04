@@ -43,10 +43,10 @@ const imdbSpotterPopup = {
 
     const tracksetName = movieTitle
 
-    const tracksetUrl = SpotifyApi.getSpotifyTracksetUrl(tracksetName, trackIDs)
+    const tracksetUrl = SpotifyApi.getTracksetUrl(tracksetName, trackIDs)
     tracksetButton.setAttribute('data-app-url', tracksetUrl)
 
-    const webUrl = SpotifyApi.getSpotifyTracksetWebUrl(tracksetName, trackIDs)
+    const webUrl = SpotifyApi.getTracksetWebUrl(tracksetName, trackIDs)
     tracksetButton.setAttribute('data-web-url', webUrl)
 
     tracksetButton.addEventListener('click', this.onSpotifyButtonClick)
@@ -102,7 +102,7 @@ const imdbSpotterPopup = {
     const promises = []
 
     for (const track of tracks) {
-      const promise = SpotifyApi.getSpotifyTrack(track).then(data => {
+      const promise = SpotifyApi.getTrack(track).then(data => {
         const li = document.createElement('li')
         const titleSpan = this.getTrackTitleEl(track)
         const artistSpan = this.getTrackArtistEl(track)

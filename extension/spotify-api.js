@@ -16,25 +16,21 @@
  */
 
 class SpotifyApi {
-  static getSpotifyTrackSearchUrl(query) {
-    return `https://api.spotify.com/v1/search?type=track&q=${encodeURIComponent(query)}`
-  }
-
-  static getSpotifyTracksetUrl(name, trackIDs) {
-    console.debug('getSpotifyTracksetUrl', name, trackIDs)
+  static getTracksetUrl(name, trackIDs) {
+    console.debug('getTracksetUrl', name, trackIDs)
     const joinedIDs = trackIDs.join(',')
     return `spotify:trackset:${name}:${joinedIDs}`
   }
 
-  static getSpotifyTracksetWebUrl(name, trackIDs) {
+  static getTracksetWebUrl(name, trackIDs) {
     const joinedIDs = trackIDs.join(',')
     return `https://play.spotify.com/trackset/${encodeURIComponent(name)}/${joinedIDs}`
   }
 
-  static getSpotifyTrack(track) {
+  static getTrack(track) {
     const query = `${this.stripPunctuation(track.title)} ${track.artist}`
-    const url = SpotifyApi.getSpotifyTrackSearchUrl(query)
-    console.debug('getSpotifyTrack', url)
+    const url = `https://api.spotify.com/v1/search?type=track&q=${encodeURIComponent(query)}`
+    console.debug('getTrack', url)
     return $.getJSON(url)
   }
 
