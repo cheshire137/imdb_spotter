@@ -283,8 +283,7 @@ const imdbSpotterPopup = {
   },
 
   onImdbError(xhr, status, error) {
-    console.error('failed to get IMDB results', xhr.responseText,
-                  `status: ${status}, error: ${error}`)
+    console.error('failed to get IMDB results', `status: ${status}, error: ${error}`)
     this.toggleSearchFormDisabled(false)
     const errorEl = document.getElementById('error-message')
     errorEl.textContent = 'Failed to get IMDB movie info.'

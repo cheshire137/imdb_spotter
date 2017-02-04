@@ -68,7 +68,8 @@
 
 .hero-body,
 .footer,
-.section {
+.section,
+.notification {
   padding: 0.75rem 1rem;
 }
 
@@ -96,6 +97,11 @@ a {
 .input.is-active,
 .input.is-focused,
 .input:active,
-.input:focus {
+.input:focus,
+.select:after,
+.select select.is-active,
+.select select.is-focused,
+.select select:active,
+.select select:focus {
   border-color: #f8e883;
 }
