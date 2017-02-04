@@ -247,6 +247,7 @@ class ImdbSpotterPopup {
         }
       }
 
+      ImdbLocalStorage.set('imdb-tracks', tracks)
       this.populatePopup(movieTitle, tracks)
     })
   }
@@ -367,6 +368,7 @@ class ImdbSpotterPopup {
     ImdbLocalStorage.delete('movie-rating')
     ImdbLocalStorage.delete('movie-year')
     ImdbLocalStorage.delete('movie-poster')
+    ImdbLocalStorage.delete('imdb-tracks')
   }
 
   saveImdbData(data) {
@@ -376,6 +378,14 @@ class ImdbSpotterPopup {
     ImdbLocalStorage.set('movie-year', data.Year)
     if (data.Poster !== 'N/A') {
       ImdbLocalStorage.set('movie-poster', data.Poster)
+    }
+  }
+
+  loadImdbTracks() {
+    const title = ImdbLocalStorage.get('movie-title')
+    const tracks = ImdbLocalStorage.get('imdb-tracks')
+    if (title && tracks) {
+      this.populatePopup(title, tracks)
     }
   }
 
@@ -419,6 +429,7 @@ class ImdbSpotterPopup {
     this.populateYearsSelect()
     this.loadFormData()
     this.loadImdbData()
+    this.loadImdbTracks()
     this.setupOptionsLink()
     this.setupSearchForm()
   }
