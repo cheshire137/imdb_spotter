@@ -257,6 +257,8 @@ class ImdbSpotterPopup {
       return
     }
 
+    this.saveImdbData(data)
+
     this.movieTitle.textContent = data.Title
     this.movieGenre.textContent = data.Genre
     this.movieRating.textContent = data.imdbRating
@@ -327,6 +329,56 @@ class ImdbSpotterPopup {
     ImdbLocalStorage.set('year', year)
   }
 
+  loadImdbData() {
+    const title = ImdbLocalStorage.get('movie-title')
+    if (title) {
+      this.movieTitle.textContent = title
+    }
+
+    const genre = ImdbLocalStorage.get('movie-genre')
+    if (genre) {
+      this.movieGenre.textContent = genre
+    }
+
+    const rating = ImdbLocalStorage.get('movie-rating')
+    if (rating) {
+      this.movieRating.textContent = rating
+    }
+
+    const year = ImdbLocalStorage.get('movie-year')
+    if (year) {
+      this.movieYear.textContent = year
+    }
+
+    const poster = ImdbLocalStorage.get('movie-poster')
+    if (poster) {
+      this.moviePoster.src = poster
+      this.moviePoster.style.display = 'block'
+    }
+
+    if (title || genre || rating || year || poster) {
+      this.movieDetailsWrapper.style.display = 'block'
+    }
+  }
+
+  clearImdbData() {
+    ImdbLocalStorage.delete('movie-title')
+    ImdbLocalStorage.delete('movie-genre')
+    ImdbLocalStorage.delete('movie-rating')
+    ImdbLocalStorage.delete('movie-year')
+    ImdbLocalStorage.delete('movie-poster')
+  }
+
+  saveImdbData(data) {
+    ImdbLocalStorage.set('movie-title', data.Title)
+    ImdbLocalStorage.set('movie-genre', data.Genre)
+    ImdbLocalStorage.set('movie-rating', data.imdbRating)
+    ImdbLocalStorage.set('movie-year', data.Year)
+    if (data.Poster !== 'N/A') {
+      ImdbLocalStorage.set('movie-poster', data.Poster)
+    }
+  }
+
   onSearchSubmit(event) {
     event.preventDefault()
     this.errorEl.textContent = ''
@@ -335,6 +387,7 @@ class ImdbSpotterPopup {
     this.noSpotifyTracksMessage.style.display = 'none'
     this.toggleSearchFormDisabled(true)
     this.saveFormData()
+    this.clearImdbData()
     this.searchImdbByTitle()
   }
 
@@ -365,6 +418,7 @@ class ImdbSpotterPopup {
     console.debug('popup opened')
     this.populateYearsSelect()
     this.loadFormData()
+    this.loadImdbData()
     this.setupOptionsLink()
     this.setupSearchForm()
   }
