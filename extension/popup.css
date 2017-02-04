@@ -1,5 +1,7 @@
 body {
   min-width: 400px;
+  overflow: auto;
+  min-height: 200px;
 }
 
 .logo {
@@ -67,11 +69,6 @@ body {
   margin-top: 1em;
 }
 
-#year {
-  font-size: 12px;
-  padding: 4px 6px;
-}
-
 .hero-body,
 .footer,
 .section,
@@ -115,6 +112,16 @@ a {
 .spotify-button {
   background-color: #2ebd59;
   color: #fff;
+  border-color: transparent;
+  -webkit-transition: background-color 86ms ease-out;
+  transition: background-color 86ms ease-out;
+}
+
+.button.spotify-button.is-hovered,
+.button.spotify-button:hover {
+  background-color: #84bd00;
+  color: #fff;
+  border-color: transparent;
 }
 
 .columns {

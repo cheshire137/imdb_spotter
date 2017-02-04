@@ -19,13 +19,17 @@
     <section class="section">
       <div id="error-message" class="notification is-danger" style="display: none"></div>
       <form id="search-form" class="search-form">
-        <input type="text" class="input" id="query" placeholder="Movie title">
-        <button type="submit" id="submit" class="button is-primary">
-          Get Soundtrack
-        </button>
-        <span class="select">
-          <select id="year"><option value="">Any year</option></select>
-        </span>
+        <p class="control">
+          <input type="text" class="input" id="query" placeholder="Movie title">
+        </p>
+        <p class="control">
+          <span class="select">
+            <select id="year"><option value="">Any year</option></select>
+          </span>
+          <button type="submit" id="submit" class="button is-primary">
+            Get Soundtrack
+          </button>
+        </p>
       </form>
       <div id="movie-details-wrapper" class="movie-metadata" style="display: none">
         <div class="columns">
