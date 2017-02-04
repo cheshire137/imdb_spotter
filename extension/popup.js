@@ -222,12 +222,8 @@ class ImdbSpotterPopup {
 
   getImdbSoundtrack(movieTitle, imdbID) {
     const url = `http://www.imdb.com/title/${imdbID}/soundtrack`
-
+    ImdbLocalStorage.set('imdb-url', url)
     this.movieLink.href = url
-    this.movieLink.addEventListener('click', event => {
-      event.preventDefault()
-      chrome.tabs.create({ url })
-    })
 
     $.get(url, data => {
       const songEls = $('.soundTrack', $(data))
@@ -265,9 +261,7 @@ class ImdbSpotterPopup {
     this.movieRating.textContent = data.imdbRating
     this.movieYear.textContent = data.Year
 
-    if (data.Poster === 'N/A') {
-      this.moviePoster.style.display = 'none'
-    } else {
+    if (data.Poster !== 'N/A') {
       this.moviePoster.src = data.Poster
       this.moviePoster.style.display = 'block'
     }
@@ -357,7 +351,12 @@ class ImdbSpotterPopup {
       this.moviePoster.style.display = 'block'
     }
 
-    if (title || genre || rating || year || poster) {
+    const url = ImdbLocalStorage.get('imdb-url')
+    if (url) {
+      this.movieLink.href = url
+    }
+
+    if (title && url) {
       this.movieDetailsWrapper.style.display = 'block'
     }
   }
@@ -369,6 +368,7 @@ class ImdbSpotterPopup {
     ImdbLocalStorage.delete('movie-year')
     ImdbLocalStorage.delete('movie-poster')
     ImdbLocalStorage.delete('imdb-tracks')
+    ImdbLocalStorage.delete('imdb-url')
   }
 
   saveImdbData(data) {
@@ -424,6 +424,13 @@ class ImdbSpotterPopup {
     }
   }
 
+  setupMovieLink() {
+    this.movieLink.addEventListener('click', event => {
+      event.preventDefault()
+      chrome.tabs.create({ url: this.movieLink.href })
+    })
+  }
+
   onPopupOpened() {
     console.debug('popup opened')
     this.populateYearsSelect()
@@ -431,6 +438,7 @@ class ImdbSpotterPopup {
     this.loadImdbData()
     this.loadImdbTracks()
     this.setupOptionsLink()
+    this.setupMovieLink()
     this.setupSearchForm()
   }
 }
@@ -447,3 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
     )
   })
 })
+
+window.setTimeout(() => {
+  document.body.style.minHeight = `${screen.height}px`
+}, 150)
