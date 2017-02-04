@@ -16,39 +16,42 @@
  */
 
 const imdbSpotterPopup = {
-  getSpotifyTrackSearchUrl: function(query) {
+  getSpotifyTrackSearchUrl(query) {
     return `http://ws.spotify.com/search/1/track.json?q=${encodeURIComponent(query)}`
   },
 
-  getSpotifyTracksetUrl: function(name, trackIDs) {
+  getSpotifyTracksetUrl(name, trackIDs) {
     const joinedIDs = trackIDs.join(',')
     return `spotify:trackset:${name}:${joinedIDs}`
   },
 
-  getSpotifyTracksetWebUrl: function(name, trackIDs) {
-    const joinedIDs = trackIDs.join(',');
+  getSpotifyTracksetWebUrl(name, trackIDs) {
+    const joinedIDs = trackIDs.join(',')
     return `https://play.spotify.com/trackset/${encodeURIComponent(name)}/${joinedIDs}`
   },
 
-  getSpotifyTrackID: function(appUrl) {
+  getSpotifyTrackID(appUrl) {
     return appUrl.split('spotify:track:')[1]
   },
 
-  getSpotifyTrackWebUrl: function(appUrl) {
+  getSpotifyTrackWebUrl(appUrl) {
     return `https://play.spotify.com/track/${this.getSpotifyTrackID(appUrl)}`
   },
 
-  onTracksetLinkClick: function(event) {
+  onTracksetLinkClick(event) {
     event.preventDefault()
-    const spotifyChoice = event.target.getAttribute('data-spotify')
+    const link = event.target
+    let url
+    const spotifyChoice = link.getAttribute('data-spotify')
     if (spotifyChoice === 'desktop_application') {
-      chrome.tabs.create({ url: tracksetUrl })
+      url = link.getAttribute('data-app-url')
     } else {
-      chrome.tabs.create({ url: webUrl })
+      url = link.getAttribute('data-web-url')
     }
+    chrome.tabs.create({ url })
   },
 
-  setTracksetLink: function(spotifyChoice) {
+  setTracksetLink(spotifyChoice) {
     const link = document.getElementById('trackset-link')
     link.setAttribute('data-spotify', spotifyChoice)
 
@@ -61,25 +64,29 @@ const imdbSpotterPopup = {
     }
 
     const tracksetName = 'Turntable.fm'
+
     const tracksetUrl = this.getSpotifyTracksetUrl(tracksetName, trackIDs)
+    link.setAttribute('data-app-url', tracksetUrl)
+
     const webUrl = this.getSpotifyTracksetWebUrl(tracksetName, trackIDs)
+    link.setAttribute('data-web-url', webUrl)
 
     link.addEventListener('click', this.onTracksetLinkClick)
     link.classList.remove('hidden')
   },
 
-  getTrackListItem: function(track) {
+  getTrackListItem(track) {
     const title = this.stripQuotes(track.title)
     const artist = this.stripQuotes(track.artist)
     const selector = `#track-list li[data-title="${title}"][data-artist="${artist}"]`
     return document.querySelector(selector)
   },
 
-  setTrackLink: function(track, isLast, spotifyChoice) {
+  setTrackLink(track, isLast, spotifyChoice) {
     const query = `${this.stripPunctuation(track.title)} ${track.artist}`
     const url = this.getSpotifyTrackSearchUrl(query)
 
-    $.getJSON(url, (data) => {
+    $.getJSON(url, data => {
       if (data && data.info && data.info.num_results > 0) {
         const spotifyUrl = data.tracks[0].href
         const webUrl = this.getSpotifyTrackWebUrl(spotifyUrl)
@@ -89,7 +96,7 @@ const imdbSpotterPopup = {
         spotifyLink.href = webUrl
         spotifyLink.setAttribute('data-spotify', spotifyUrl)
         spotifyLink.className = 'track-link'
-        spotifyLink.addEventListener('click', function(event) {
+        spotifyLink.addEventListener('click', event => {
           event.preventDefault()
           if (spotifyChoice === 'desktop_application') {
             chrome.tabs.create({ url: spotifyUrl })
@@ -112,22 +119,22 @@ const imdbSpotterPopup = {
     })
   },
 
-  setSpotifyLinks: function(tracks, spotifyChoice) {
+  setSpotifyLinks(tracks, spotifyChoice) {
     const link = document.getElementById('trackset-link')
     link.removeEventListener('click', this.onTracksetLinkClick)
     link.classList.add('hidden')
 
     const numTracks = tracks.length
     for (let i = 0; i < numTracks; i++) {
-      this.setTrackLink(tracks[i], i == numTracks - 1, spotifyChoice)
+      this.setTrackLink(tracks[i], i === numTracks - 1, spotifyChoice)
     }
   },
 
-  stripQuotes: function(str) {
+  stripQuotes(str) {
     return str.replace(/"/, "'")
   },
 
-  populateTrackList: function(tracks) {
+  populateTrackList(tracks) {
     const trackList = document.getElementById('track-list')
     while (trackList.hasChildNodes()) {
       trackList.removeChild(trackList.lastChild)
@@ -154,36 +161,41 @@ const imdbSpotterPopup = {
     }
   },
 
-  setupOptionsLink: function() {
+  setupOptionsLink() {
     const link = document.querySelector('a[href="#options"]')
-    link.addEventListener('click', function(event) {
+    link.addEventListener('click', event => {
       event.preventDefault()
-      chrome.tabs.create({ url: chrome.extension.getURL('options.html') })
+      const url = chrome.extension.getURL('options.html')
+      chrome.tabs.create({ url })
     })
   },
 
-  populatePopup: function(tracks) {
+  populatePopup(tracks) {
     this.populateTrackList(tracks)
 
-    chrome.storage.sync.get('imdb_spotter_options', (opts) => {
+    chrome.storage.sync.get('imdb_spotter_options', opts => {
       const extensionOpts = opts.imdb_spotter_options || {}
       const spotifyChoice = extensionOpts.spotify || 'web_player'
       this.setSpotifyLinks(tracks, spotifyChoice)
     });
   },
 
-  getArtist: function(songEl) {
+  getArtist(songEl) {
     const links = Array.from(songEl.querySelectorAll('a'))
-    let artist = links.map((el) => {
+
+    let artist = links.map(el => {
       const precedingText = el.previousSibling.nodeValue.trim()
       if (precedingText.indexOf('Performed by') > -1) {
         return el.textContent
       }
+      return ''
     })
+    artist = artist.filter(str => str.length > 0)
     if (artist.length > 0) {
       return artist[0]
     }
-    artist = links.map((el) => {
+
+    artist = links.map(el => {
       const precedingText = el.previousSibling.nodeValue.trim()
       if (precedingText.indexOf('Written by') > -1) {
         return el.textContent
@@ -191,41 +203,43 @@ const imdbSpotterPopup = {
       if (precedingText.indexOf('Music by') > -1) {
         return el.textContent
       }
+      return ''
     })
+    artist = artist.filter(str => str.length > 0)
     if (artist.length > 0) {
       return artist[0]
     }
+
     return ''
   },
 
-  stripPunctuation: function(rawStr) {
-    const str = rawStr.replace(/[\[\]\.,-\/#!$%"\^&\*;:{}=\-_`~()']/g, ' ');
+  stripPunctuation(rawStr) {
+    const str = rawStr.replace(/[\[\]\.,-\/#!$%"\^&\*;:{}=\-_`~()']/g, ' ')
     return str.replace(/\s+/g, ' ').trim()
   },
 
-  getImdbSoundtrack: function(imdbID) {
+  getImdbSoundtrack(imdbID) {
     const url = `http://www.imdb.com/title/${imdbID}/soundtrack`
 
     const movieLink = document.getElementById('movie-link')
     movieLink.href = url
-    movieLink.addEventListener('click', function(event) {
+    movieLink.addEventListener('click', event => {
       event.preventDefault()
-      chrome.tabs.create({ url: url })
+      chrome.tabs.create({ url })
     })
 
-    const trackList = document.getElementById('track-list')
-    $.get(url, (data) => {
+    $.get(url, data => {
       const songEls = $('.soundTrack', $(data))
       const tracks = []
       const addedTracks = []
 
-      songEls.forEach((songEl) => {
+      songEls.forEach(songEl => {
         const brs = Array.from(songEl.querySelectorAll('br'))
-        const title = brs.map((el) => {
+        const title = brs.map(el => {
           return el.previousSibling.nodeValue
         })[0]
         const artist = this.getArtist(songEl)
-        const track = { title: title, artist: artist }
+        const track = { title, artist }
         const trackStr = `${title} ${artist}`
         if (addedTracks.indexOf(trackStr) < 0) {
           tracks.push(track)
@@ -237,7 +251,7 @@ const imdbSpotterPopup = {
     })
   },
 
-  onSearch: function() {
+  onSearch() {
     const queryField = document.getElementById('query')
     const query = queryField.value.trim()
     if (query.length < 1) {
@@ -252,7 +266,7 @@ const imdbSpotterPopup = {
       url += `&y=${encodeURIComponent(year)}`
     }
 
-    $.getJSON(url, (data) => {
+    $.getJSON(url, data => {
       const wrapper = document.getElementById('movie-details-wrapper')
       if (!data || data.Response === 'False') {
         wrapper.style.display = 'none'
@@ -276,16 +290,16 @@ const imdbSpotterPopup = {
     })
   },
 
-  setupSearchForm: function() {
+  setupSearchForm() {
     document.getElementById('submit').addEventListener('click', () => {
       this.onSearch()
     })
 
-    document.querySelector('form').addEventListener('submit', (e) => {
+    document.querySelector('form').addEventListener('submit', e => {
       e.preventDefault()
     })
 
-    document.getElementById('query').addEventListener('keypress', (e) => {
+    document.getElementById('query').addEventListener('keypress', e => {
       if (e.which === 13) { // Enter
         e.preventDefault()
         this.onSearch()
@@ -294,20 +308,18 @@ const imdbSpotterPopup = {
     })
   },
 
-  onPopupOpened: function() {
+  onPopupOpened() {
     this.setupOptionsLink()
     this.setupSearchForm()
   }
-};
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-  chrome.tabs.getSelected(null, function(tab) {
+document.addEventListener('DOMContentLoaded', () => {
+  chrome.tabs.getSelected(null, tab => {
     chrome.tabs.sendRequest(
       tab.id,
       { greeting: 'popup_opened', tab_id: tab.id },
-      function() {
-        imdbSpotterPopup.onPopupOpened()
-      }
-    );
-  });
-});
+      () => imdbSpotterPopup.onPopupOpened()
+    )
+  })
+})

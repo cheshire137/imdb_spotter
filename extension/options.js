@@ -23,12 +23,10 @@ function saveOptions(event) {
   const opts = {}
   opts[optionsKey] = extensionOpts
 
-  chrome.storage.sync.set(opts, function() {
+  chrome.storage.sync.set(opts, () => {
     const statusArea = document.getElementById('status-message')
     statusArea.textContent = 'Okay, got it!'
-    $(statusArea).fadeIn(function() {
-      setTimeout(() => $(statusArea).fadeOut(), 2000)
-    })
+    $(statusArea).fadeIn(() => setTimeout(() => $(statusArea).fadeOut(), 2000))
   })
 }
 
@@ -45,7 +43,7 @@ function restoreSpotifyOption(extensionOpts) {
 }
 
 function restoreOptions() {
-  chrome.storage.sync.get(optionsKey, function(opts) {
+  chrome.storage.sync.get(optionsKey, opts => {
     const extensionOpts = opts.imdb_spotter_options || {}
     restoreSpotifyOption(extensionOpts)
   })
