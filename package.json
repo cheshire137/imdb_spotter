@@ -25,7 +25,8 @@
       "document",
       "window",
       "$",
-      "chrome"
+      "chrome",
+      "_gaq"
     ],
     "space": true,
     "rules": {
