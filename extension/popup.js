@@ -239,7 +239,6 @@ const imdbSpotterPopup = {
     })
 
     $.get(url, data => {
-      console.debug(url, data)
       const songEls = $('.soundTrack', $(data))
       const tracks = []
       const addedTracks = []
@@ -247,9 +246,7 @@ const imdbSpotterPopup = {
       for (let i = 0; i < songEls.length; i++) {
         const songEl = songEls[i]
         const brs = Array.from(songEl.querySelectorAll('br'))
-        const title = brs.map(el => {
-          return el.previousSibling.nodeValue
-        })[0]
+        const title = brs.map(el => el.previousSibling.nodeValue)[0]
         const artist = this.getArtist(songEl)
         const track = { title, artist }
         const trackStr = `${title} ${artist}`
@@ -264,7 +261,6 @@ const imdbSpotterPopup = {
   },
 
   onImdbResults(data) {
-    console.debug(data)
     const wrapper = document.getElementById('movie-details-wrapper')
     if (!data || data.Response === 'False') {
       wrapper.style.display = 'none'
