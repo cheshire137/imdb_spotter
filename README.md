@@ -5,9 +5,7 @@ soundtracks.
 
 ## Screenshots
 
-![Screenshot 1 of IMDB Spotter](https://raw.githubusercontent.com/cheshire137/imdb_spotter/master/screenshot1.png)
-
-![Screenshot 2 of IMDB Spotter](https://raw.githubusercontent.com/cheshire137/imdb_spotter/master/screenshot2.png)
+![Screenshot of IMDB Spotter](https://raw.githubusercontent.com/cheshire137/imdb_spotter/master/screenshot.png)
 
 ## How to Develop
 
