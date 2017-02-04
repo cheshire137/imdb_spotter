@@ -72,7 +72,7 @@ const imdbSpotterPopup = {
     link.setAttribute('data-web-url', webUrl)
 
     link.addEventListener('click', this.onTracksetLinkClick)
-    link.classList.remove('hidden')
+    link.style.display = 'block'
   },
 
   getTrackListItem(track) {
@@ -122,7 +122,7 @@ const imdbSpotterPopup = {
   setSpotifyLinks(tracks, spotifyChoice) {
     const link = document.getElementById('trackset-link')
     link.removeEventListener('click', this.onTracksetLinkClick)
-    link.classList.add('hidden')
+    link.style.display = 'none'
 
     const numTracks = tracks.length
     for (let i = 0; i < numTracks; i++) {
