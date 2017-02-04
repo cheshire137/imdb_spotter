@@ -192,6 +192,9 @@ const imdbSpotterPopup = {
       if (precedingText.indexOf('Performed by') > -1) {
         return el.textContent
       }
+      if (precedingText.indexOf('Written and performed by') > -1) {
+        return el.textContent
+      }
       return ''
     })
     artist = artist.filter(str => str.length > 0)
@@ -205,6 +208,9 @@ const imdbSpotterPopup = {
         return el.textContent
       }
       if (precedingText.indexOf('Music by') > -1) {
+        return el.textContent
+      }
+      if (precedingText.indexOf('Music and lyrics by') > -1) {
         return el.textContent
       }
       return ''
