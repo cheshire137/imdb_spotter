@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var imdb_spotter = {
-  on_popup_opened: function(tab_id, callback) {
-    console.log('imdb spotter popup opened');
+const imdbSpotter = {
+  onPopupOpened: function(tabID, callback) {
+    callback()
   }
-};
+}
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-  if (request.greeting == 'popup_opened') {
-    imdb_spotter.on_popup_opened(request.tab_id, function() {
-      sendResponse();
-    });
+  if (request.greeting === 'popup_opened') {
+    imdbSpotter.onPopupOpened(request.tab_id, function() {
+      sendResponse()
+    })
   }
-});
+})

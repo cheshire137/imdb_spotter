@@ -15,31 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function save_options() {
-  var spotify = $('input[name="spotify"]:checked').val();
-  var status_area = $('#status-message');
-  var options = {spotify: spotify};
+function saveOptions(event) {
+  console.log('saveOptions', event.target)
+  const input = document.querySelector('input[name="spotify"]:checked')
+  const spotify = input.value
+  const statusArea = document.getElementById('status-message')
+  const options = { spotify: spotify }
+
   chrome.storage.sync.set({'imdb_spotter_options': options}, function() {
-    status_area.text('Okay, got it!').fadeIn(function() {
-      setTimeout(function() {
-        status_area.fadeOut();
-      }, 2000);
-    });
-  });
+    statusArea.textContent = 'Okay, got it!'
+    $(statusArea).fadeIn(function() {
+      setTimeout(() => $(statusArea).fadeOut(), 2000)
+    })
+  })
 }
 
-function restore_options() {
+function restoreOptions() {
   chrome.storage.sync.get('imdb_spotter_options', function(opts) {
-    opts = opts.imdb_spotter_options || {};
-    if (opts.spotify) {
-      var selector = 'input[name="spotify"][value="' + opts.spotify + '"]';
-      $(selector).attr('checked', 'checked');
+    const extensionOpts = opts.imdb_spotter_options || {}
+
+    if (extensionOpts.spotify) {
+      const selector = `input[name="spotify"][value="${extensionOpts.spotify}"]`
+      const input = document.querySelector(selector)
+      input.checked = true
     } else {
-      $('#web_player').attr('checked', 'checked');
+      const player = document.getElementById('web_player')
+      player.checked = true
     }
-  });
+  })
 }
 
-document.addEventListener('DOMContentLoaded', restore_options);
+document.addEventListener('DOMContentLoaded', restoreOptions)
 
-$('input[name="spotify"]').on('change', save_options);
+const spotifyInput = document.querySelector('input[name="spotify"]')
+spotifyInput.addEventListener('change', saveOptions)

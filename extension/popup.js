@@ -15,263 +15,302 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-42851748-1']);
-_gaq.push(['_trackPageview']);
+var _gaq = _gaq || []
+_gaq.push(['_setAccount', 'UA-42851748-1'])
+_gaq.push(['_trackPageview'])
 
 (function() {
-  var ga = document.createElement('script');
-  ga.type = 'text/javascript';
-  ga.async = true;
-  ga.src = 'https://ssl.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0];
-  s.parentNode.insertBefore(ga, s);
+  const ga = document.createElement('script')
+  ga.type = 'text/javascript'
+  ga.async = true
+  ga.src = 'https://ssl.google-analytics.com/ga.js'
+
+  const s = document.getElementsByTagName('script')[0]
+  s.parentNode.insertBefore(ga, s)
 })();
 
-var imdb_spotter_popup = {
-  get_spotify_track_search_url: function(query) {
-    return 'http://ws.spotify.com/search/1/track.json?q=' +
-            encodeURIComponent(query);
+const imdbSpotterPopup = {
+  getSpotifyTrackSearchUrl: function(query) {
+    return `http://ws.spotify.com/search/1/track.json?q=${encodeURIComponent(query)}`
   },
 
-  get_spotify_trackset_url: function(name, track_ids) {
-    var joined_ids = track_ids.join(',');
-    return 'spotify:trackset:' + name + ':' + joined_ids;
+  getSpotifyTracksetUrl: function(name, trackIDs) {
+    const joinedIDs = trackIDs.join(',')
+    return `spotify:trackset:${name}:${joinedIDs}`
   },
 
-  get_spotify_trackset_web_url: function(name, track_ids) {
-    var joined_ids = track_ids.join(',');
-    return 'https://play.spotify.com/trackset/' + encodeURIComponent(name) +
-           '/' + joined_ids;
+  getSpotifyTracksetWebUrl: function(name, trackIDs) {
+    const joinedIDs = trackIDs.join(',');
+    return `https://play.spotify.com/trackset/${encodeURIComponent(name)}/${joinedIDs}`
   },
 
-  get_spotify_track_id: function(app_url) {
-    return app_url.split('spotify:track:')[1];
+  getSpotifyTrackID: function(appUrl) {
+    return appUrl.split('spotify:track:')[1]
   },
 
-  get_spotify_track_web_url: function(app_url) {
-    return 'https://play.spotify.com/track/' +
-           this.get_spotify_track_id(app_url);
+  getSpotifyTrackWebUrl: function(appUrl) {
+    return `https://play.spotify.com/track/${this.getSpotifyTrackID(appUrl)}`
   },
 
-  set_trackset_link: function(spotify_choice) {
-    var link = $('a#trackset-link');
-    var track_ids = [];
-    $('#track-list .track-link').each(function() {
-      var track_id = $(this).attr('data-spotify').split('spotify:track:')[1];
-      track_ids.push(track_id);
-    });
-    var trackset_name = 'Turntable.fm';
-    var trackset_url = this.get_spotify_trackset_url(trackset_name, track_ids);
-    var web_url = this.get_spotify_trackset_web_url(trackset_name, track_ids);
-    link.click(function() {
-      if (spotify_choice === 'desktop_application') {
-        chrome.tabs.create({url: trackset_url});
-      } else {
-        chrome.tabs.create({url: web_url});
-      }
-      return false;
-    });
-    link.removeClass('hidden');
+  onTracksetLinkClick: function(event) {
+    event.preventDefault()
+    const spotifyChoice = event.target.getAttribute('data-spotify')
+    if (spotifyChoice === 'desktop_application') {
+      chrome.tabs.create({ url: tracksetUrl })
+    } else {
+      chrome.tabs.create({ url: webUrl })
+    }
   },
 
-  get_track_list_item: function(track) {
-    var title = this.strip_quotes(track.title);
-    var artist = this.strip_quotes(track.artist);
-    return $('#track-list li[data-title="' + title + '"][data-artist="' +
-             artist + '"]');
+  setTracksetLink: function(spotifyChoice) {
+    const link = document.getElementById('trackset-link')
+    link.setAttribute('data-spotify', spotifyChoice)
+
+    const trackIDs = []
+    const trackLinks = document.querySelectorAll('.track-link')
+    for (const trackLink of trackLinks) {
+      const spotifyAttr = trackLink.getAttribute('data-spotify')
+      const trackID = spotifyAttr.split('spotify:track:')[1]
+      trackIDs.push(trackID)
+    }
+
+    const tracksetName = 'Turntable.fm'
+    const tracksetUrl = this.getSpotifyTracksetUrl(tracksetName, trackIDs)
+    const webUrl = this.getSpotifyTracksetWebUrl(tracksetName, trackIDs)
+
+    link.addEventListener('click', this.onTracksetLinkClick)
+    link.classList.remove('hidden')
   },
 
-  set_track_link: function(track, is_last, spotify_choice) {
-    var query = this.strip_punctuation(track.title) + ' ' + track.artist;
-    var url = this.get_spotify_track_search_url(query);
-    var me = this;
-    $.getJSON(url, function(data) {
+  getTrackListItem: function(track) {
+    const title = this.stripQuotes(track.title)
+    const artist = this.stripQuotes(track.artist)
+    const selector = `#track-list li[data-title="${title}"][data-artist="${artist}"]`
+    return document.querySelector(selector)
+  },
+
+  setTrackLink: function(track, isLast, spotifyChoice) {
+    const query = `${this.stripPunctuation(track.title)} ${track.artist}`
+    const url = this.getSpotifyTrackSearchUrl(query)
+
+    $.getJSON(url, (data) => {
       if (data && data.info && data.info.num_results > 0) {
-        var spotify_url = data.tracks[0].href;
-        var web_url = me.get_spotify_track_web_url(spotify_url);
-        var list_item = me.get_track_list_item(track);
-        var spotify_link = $('<a href="' + web_url +
-                             '" data-spotify="' + spotify_url +
-                             '" class="track-link"></a>');
-        spotify_link.click(function() {
-          if (spotify_choice === 'desktop_application') {
-            chrome.tabs.create({url: spotify_url});
+        const spotifyUrl = data.tracks[0].href
+        const webUrl = this.getSpotifyTrackWebUrl(spotifyUrl)
+        const listItem = this.getTrackListItem(track)
+
+        const spotifyLink = document.createElement('a')
+        spotifyLink.href = webUrl
+        spotifyLink.setAttribute('data-spotify', spotifyUrl)
+        spotifyLink.className = 'track-link'
+        spotifyLink.addEventListener('click', function(event) {
+          event.preventDefault()
+          if (spotifyChoice === 'desktop_application') {
+            chrome.tabs.create({ url: spotifyUrl })
           } else {
-            chrome.tabs.create({url: web_url});
+            chrome.tabs.create({ url: webUrl })
           }
-          return false;
-        });
-        spotify_link.append(list_item.children().detach());
-        list_item.append(spotify_link);
-      }
-      if (is_last) {
-        me.set_trackset_link(spotify_choice);
-      }
-    });
-  },
+        })
 
-  set_spotify_links: function(tracks, spotify_choice) {
-    $('a#trackset-link').unbind('click').addClass('hidden');
-    var num_tracks = tracks.length;
-    for (var i=0; i<num_tracks; i++) {
-      this.set_track_link(tracks[i], i == num_tracks - 1, spotify_choice);
-    }
-  },
-
-  strip_quotes: function(str) {
-    return str.replace(/"/, "'");
-  },
-
-  populate_track_list: function(tracks) {
-    var track_list = $('#track-list');
-    track_list.empty();
-    for (var i=0; i<tracks.length; i++) {
-      var track = tracks[i];
-      var li = $('<li></li>');
-      var title_span = $('<span class="title"></span>');
-      title_span.text(track.title);
-      li.append(title_span);
-      var artist_span = $('<span class="artist"></span>');
-      artist_span.text(track.artist);
-      li.append(artist_span);
-      li.attr('data-artist', this.strip_quotes(track.artist));
-      li.attr('data-title', this.strip_quotes(track.title));
-      track_list.append(li);
-    }
-  },
-
-  setup_options_link: function() {
-    $('a[href="#options"]').click(function() {
-      chrome.tabs.create({url: chrome.extension.getURL("options.html")});
-      return false;
-    });
-  },
-
-  populate_popup: function(tracks) {
-    this.populate_track_list(tracks);
-    var me = this;
-    chrome.storage.sync.get('imdb_spotter_options', function(opts) {
-      opts = opts.imdb_spotter_options || {};
-      var spotify_choice = opts.spotify || 'web_player';
-      me.set_spotify_links(tracks, spotify_choice);
-    });
-  },
-
-  get_artist: function(song_el) {
-    var links = $('a', song_el);
-    var artist = $.map(links, function(el) {
-      var preceding_text = $.trim(el.previousSibling.nodeValue);
-      if (preceding_text.indexOf('Performed by') > -1) {
-        return el.textContent;
-      }
-    });
-    if (artist.length > 0) {
-      return artist[0];
-    }
-    var artist = $.map(links, function(el) {
-      var preceding_text = $.trim(el.previousSibling.nodeValue);
-      if (preceding_text.indexOf('Written by') > -1) {
-        return el.textContent;
-      }
-      if (preceding_text.indexOf('Music by') > -1) {
-        return el.textContent;
-      }
-    });
-    if (artist.length > 0) {
-      return artist[0];
-    }
-    return '';
-  },
-
-  strip_punctuation: function(str) {
-    str = str.replace(/[\[\]\.,-\/#!$%"\^&\*;:{}=\-_`~()']/g, ' ');
-    return $.trim(str.replace(/\s+/g, ' '));
-  },
-
-  get_imdb_soundtrack: function(imdb_id) {
-    var url = 'http://www.imdb.com/title/' + imdb_id + '/soundtrack';
-    $('#movie-link').attr('href', url).click(function() {
-      chrome.tabs.create({url: url});
-      return false;
-    });
-    var track_list = $('#track-list');
-    var me = this;
-    $.get(url, function(data) {
-      var page = $(data);
-      var song_els = $('.soundTrack', data);
-      var tracks = [];
-      var added_tracks = [];
-      song_els.each(function() {
-        var song_el = $(this);
-        var title = $.map($('br', song_el), function(el) {
-          return el.previousSibling.nodeValue;
-        })[0];
-        var artist = me.get_artist(song_el);
-        var track = {title: title, artist: artist};
-        var track_str = title + ' ' + artist;
-        if (added_tracks.indexOf(track_str) == -1) {
-          tracks.push(track);
-          added_tracks.push(track_str);
+        const clone = listItem.cloneNode(true)
+        console.log('clone', clone)
+        console.log('children', clone.childNodes)
+        for (const child of clone.childNodes) {
+          spotifyLink.appendChild(child)
         }
-      });
-      me.populate_popup(tracks);
+        listItem.appendChild(spotifyLink)
+      }
+      if (isLast) {
+        this.setTracksetLink(spotifyChoice)
+      }
+    })
+  },
+
+  setSpotifyLinks: function(tracks, spotifyChoice) {
+    const link = document.getElementById('trackset-link')
+    link.removeEventListener('click', this.onTracksetLinkClick)
+    link.classList.add('hidden')
+
+    const numTracks = tracks.length
+    for (let i = 0; i < numTracks; i++) {
+      this.setTrackLink(tracks[i], i == numTracks - 1, spotifyChoice)
+    }
+  },
+
+  stripQuotes: function(str) {
+    return str.replace(/"/, "'")
+  },
+
+  populateTrackList: function(tracks) {
+    const trackList = document.getElementById('track-list')
+    while (trackList.hasChildNodes()) {
+      trackList.removeChild(trackList.lastChild)
+    }
+
+    for (let i = 0; i < tracks.length; i++) {
+      const track = tracks[i]
+      const li = document.createElement('li')
+
+      const titleSpan = document.createElement('span')
+      titleSpan.className = 'title'
+      titleSpan.textContent = track.title
+      li.appendChild(titleSpan)
+
+      const artistSpan = document.createElement('span')
+      artistSpan.className = 'artist'
+      artistSpan.textContent = track.artist
+      li.appendChild(artistSpan)
+
+      li.setAttribute('data-artist', this.stripQuotes(track.artist))
+      li.setAttribute('data-title', this.stripQuotes(track.title))
+
+      trackList.appendChild(li)
+    }
+  },
+
+  setupOptionsLink: function() {
+    const link = document.querySelector('a[href="#options"]')
+    link.addEventListener('click', function(event) {
+      event.preventDefault()
+      chrome.tabs.create({ url: chrome.extension.getURL('options.html') })
+    })
+  },
+
+  populatePopup: function(tracks) {
+    this.populateTrackList(tracks)
+
+    chrome.storage.sync.get('imdb_spotter_options', (opts) => {
+      const extensionOpts = opts.imdb_spotter_options || {}
+      const spotifyChoice = extensionOpts.spotify || 'web_player'
+      this.setSpotifyLinks(tracks, spotifyChoice)
     });
   },
 
-  on_search: function() {
-    var query_field = $('#query');
-    var query = $.trim(query_field.val());
-    if (query == '') {
-      return;
-    }
-    var year_field = $('#year');
-    var year = $.trim(year_field.val());
-    var url = 'http://www.omdbapi.com/?t=' + encodeURIComponent(query);
-    if (year != '') {
-      url += '&y=' + encodeURIComponent(year);
-    }
-    var me = this;
-    $.getJSON(url, function(data) {
-      var wrapper = $('#movie-details-wrapper');
-      if (!data || data.Response == 'False') {
-        wrapper.hide();
-        return;
+  getArtist: function(songEl) {
+    const links = Array.from(songEl.querySelectorAll('a'))
+    let artist = links.map((el) => {
+      const precedingText = el.previousSibling.nodeValue.trim()
+      if (precedingText.indexOf('Performed by') > -1) {
+        return el.textContent
       }
-      $('#movie-title').text(data.Title);
-      $('#movie-genre').text(data.Genre);
-      $('#movie-rating').text(data.imdbRating);
-      $('#movie-year').text(data.Year);
-      if (data.Poster == 'N/A') {
-        $('#movie-poster').hide();
+    })
+    if (artist.length > 0) {
+      return artist[0]
+    }
+    artist = links.map((el) => {
+      const precedingText = el.previousSibling.nodeValue.trim()
+      if (precedingText.indexOf('Written by') > -1) {
+        return el.textContent
+      }
+      if (precedingText.indexOf('Music by') > -1) {
+        return el.textContent
+      }
+    })
+    if (artist.length > 0) {
+      return artist[0]
+    }
+    return ''
+  },
+
+  stripPunctuation: function(rawStr) {
+    const str = rawStr.replace(/[\[\]\.,-\/#!$%"\^&\*;:{}=\-_`~()']/g, ' ');
+    return str.replace(/\s+/g, ' ')).trim()
+  },
+
+  getImdbSoundtrack: function(imdbID) {
+    const url = `http://www.imdb.com/title/${imdbID}/soundtrack`
+
+    const movieLink = document.getElementById('movie-link')
+    movieLink.href = url
+    movieLink.addEventListener('click', function(event) {
+      event.preventDefault()
+      chrome.tabs.create({ url: url })
+    })
+
+    const trackList = document.getElementById('track-list')
+    $.get(url, (data) => {
+      const songEls = $('.soundTrack', $(data))
+      const tracks = []
+      const addedTracks = []
+
+      songEls.forEach((songEl) => {
+        const brs = Array.from(songEl.querySelectorAll('br'))
+        const title = brs.map((el) => {
+          return el.previousSibling.nodeValue
+        })[0]
+        const artist = this.getArtist(songEl)
+        const track = { title: title, artist: artist }
+        const trackStr = `${title} ${artist}`
+        if (addedTracks.indexOf(trackStr) < 0) {
+          tracks.push(track)
+          addedTracks.push(trackStr)
+        }
+      })
+
+      this.populatePopup(tracks)
+    })
+  },
+
+  onSearch: function() {
+    const queryField = document.getElementById('query')
+    const query = queryField.value.trim()
+    if (query.length < 1) {
+      return
+    }
+
+    const yearField = document.getElementById('year')
+    const year = yearField.value.trim()
+
+    let url = `http://www.omdbapi.com/?t=${encodeURIComponent(query)}`
+    if (year.length > 0) {
+      url += `&y=${encodeURIComponent(year)}`
+    }
+
+    $.getJSON(url, (data) => {
+      const wrapper = document.getElementById('movie-details-wrapper')
+      if (!data || data.Response === 'False') {
+        wrapper.style.display = 'none'
+        return
+      }
+
+      document.getElementById('movie-title').textContent = data.Title
+      document.getElementById('movie-genre').textContent = data.Genre
+      document.getElementById('movie-rating').textContent = data.imdbRating
+      document.getElementById('movie-year').textContent = data.Year
+
+      const posterEl = document.getElementById('movie-poster')
+      if (data.Poster === 'N/A') {
+        posterEl.style.display = 'none'
       } else {
-        $('#movie-poster').attr('src', data.Poster).show();
+        posterEl.src = data.Poster
+        posterEl.style.display = 'block'
       }
-      me.get_imdb_soundtrack(data.imdbID);
-      wrapper.show();
-    });
+      this.getImdbSoundtrack(data.imdbID)
+      wrapper.style.display = 'block'
+    })
   },
 
-  setup_search_form: function() {
-    var me = this;
-    $('#submit').click(function() {
-      me.on_search();
-    });
-    $('form').submit(function(e) {
-      e.preventDefault();
-    });
-    $('#query').keypress(function(e) {
-      if (e.which == 13) { // Enter
-        e.preventDefault();
-        me.on_search();
-        return false;
+  setupSearchForm: function() {
+    document.getElementById('submit').addEventListener('click', () => {
+      this.onSearch()
+    })
+
+    document.querySelector('form').addEventListener('submit', (e) => {
+      e.preventDefault()
+    })
+
+    document.getElementById('query').addEventListener('keypress', (e) => {
+      if (e.which === 13) { // Enter
+        e.preventDefault()
+        this.onSearch()
+        return false
       }
-    });
+    })
   },
 
-  on_popup_opened: function() {
-    this.setup_options_link();
-    this.setup_search_form();
+  onPopupOpened: function() {
+    this.setupOptionsLink()
+    this.setupSearchForm()
   }
 };
 
@@ -279,9 +318,9 @@ document.addEventListener('DOMContentLoaded', function() {
   chrome.tabs.getSelected(null, function(tab) {
     chrome.tabs.sendRequest(
       tab.id,
-      {greeting: 'popup_opened', tab_id: tab.id},
+      { greeting: 'popup_opened', tab_id: tab.id },
       function() {
-        imdb_spotter_popup.on_popup_opened();
+        imdbSpotterPopup.onPopupOpened()
       }
     );
   });
