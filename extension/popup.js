@@ -44,7 +44,7 @@ const imdbSpotterPopup = {
     chrome.tabs.create({ url })
   },
 
-  setTracksetLink(movieTitle, spotifyChoice) {
+  enableSpotifyButton(movieTitle, spotifyChoice) {
     const tracksetButton = document.getElementById('trackset-button')
     tracksetButton.setAttribute('data-spotify', spotifyChoice)
 
@@ -68,87 +68,49 @@ const imdbSpotterPopup = {
     tracksetButton.style.display = 'inline-flex'
   },
 
-  getTrackListItem(spotifyTrack) {
-    console.log('getTrackListItem', spotifyTrack)
-    const targetTitle = spotifyTrack.name
-    const targetArtists = spotifyTrack.artists.map(artist => artist.name)
-    const listItems = Array.from(document.querySelectorAll('#track-list li'))
-    for (const listItem of listItems) {
-      const title = listItem.querySelector('.track-title').textContent.trim()
-      console.log(title, 'versus', targetTitle)
-      if (title === targetTitle) {
-        const artist = listItem.querySelector('.track-artist').textContent.trim()
-        console.log(artist, 'versus', targetArtists)
-        if (targetArtists.indexOf(artist) > -1) {
-          return listItem
-        }
-      }
-    }
-  },
-
-  setTrackLink(movieTitle, track, isLast, spotifyChoice) {
+  getSpotifyTrack(movieTitle, track, spotifyChoice) {
     const query = `${this.stripPunctuation(track.title)} ${track.artist}`
     const url = this.getSpotifyTrackSearchUrl(query)
-    console.debug('setTrackLink', url)
-
-    $.getJSON(url, data => {
-      console.log(data)
-      if (data && data.tracks && data.tracks.total > 0) {
-        const track = data.tracks.items[0]
-        const listItem = this.getTrackListItem(track)
-        if (!listItem) {
-          console.error("couldn't find track list item for", track)
-          return
-        }
-
-        const webUrl = track.external_urls.spotify
-
-        const spotifyLink = document.createElement('a')
-        spotifyLink.href = webUrl
-        spotifyLink.setAttribute('data-track-id', track.id)
-        spotifyLink.className = 'track-link'
-        spotifyLink.addEventListener('click', event => {
-          event.preventDefault()
-          if (spotifyChoice === 'desktop_application') {
-            chrome.tabs.create({ url: track.uri })
-          } else {
-            chrome.tabs.create({ url: webUrl })
-          }
-        })
-
-        const clone = listItem.cloneNode(true)
-        console.log('clone', clone)
-        console.log('children', clone.childNodes)
-        for (const child of clone.childNodes) {
-          spotifyLink.appendChild(child)
-        }
-        listItem.appendChild(spotifyLink)
-      }
-      if (isLast) {
-        this.setTracksetLink(movieTitle, spotifyChoice)
-      }
-    })
-  },
-
-  setSpotifyLinks(movieTitle, tracks, spotifyChoice) {
-    console.debug('setSpotifyLinks', movieTitle, spotifyChoice, tracks)
-    const tracksetButton = document.getElementById('trackset-button')
-    tracksetButton.removeEventListener('click', this.onSpotifyButtonClick)
-    tracksetButton.style.display = 'none'
-
-    const numTracks = tracks.length
-    for (let i = 0; i < numTracks; i++) {
-      this.setTrackLink(movieTitle, tracks[i], i === numTracks - 1, spotifyChoice)
-    }
-
-    this.toggleSearchFormDisabled(false)
+    console.debug('getSpotifyTrack', url)
+    return $.getJSON(url)
   },
 
   stripQuotes(str) {
     return str.replace(/"/, "'")
   },
 
-  populateTrackList(tracks) {
+  getSpotifyLink(spotifyTrack) {
+    const webUrl = spotifyTrack.external_urls.spotify
+    const spotifyLink = document.createElement('a')
+    spotifyLink.href = webUrl
+    spotifyLink.setAttribute('data-track-id', spotifyTrack.id)
+    spotifyLink.className = 'track-link'
+    spotifyLink.addEventListener('click', event => {
+      event.preventDefault()
+      if (spotifyChoice === 'desktop_application') {
+        chrome.tabs.create({ url: spotifyTrack.uri })
+      } else {
+        chrome.tabs.create({ url: webUrl })
+      }
+    })
+    return spotifyLink
+  },
+
+  getTrackTitleEl(track) {
+    const titleSpan = document.createElement('span')
+    titleSpan.className = 'track-title'
+    titleSpan.textContent = track.title
+    return titleSpan
+  },
+
+  getTrackArtistEl(track) {
+    const artistSpan = document.createElement('span')
+    artistSpan.className = 'track-artist'
+    artistSpan.textContent = track.artist
+    return artistSpan
+  },
+
+  populateTrackList(movieTitle, tracks, spotifyChoice) {
     const trackList = document.getElementById('track-list')
     while (trackList.hasChildNodes()) {
       trackList.removeChild(trackList.lastChild)
@@ -159,22 +121,33 @@ const imdbSpotterPopup = {
       return
     }
 
-    for (let i = 0; i < tracks.length; i++) {
-      const track = tracks[i]
-      const li = document.createElement('li')
+    const promises = []
 
-      const titleSpan = document.createElement('span')
-      titleSpan.className = 'track-title'
-      titleSpan.textContent = track.title
-      li.appendChild(titleSpan)
+    for (const track of tracks) {
+      const promise = this.getSpotifyTrack(movieTitle, track, spotifyChoice).then(data => {
+        const li = document.createElement('li')
+        const titleSpan = this.getTrackTitleEl(track)
+        const artistSpan = this.getTrackArtistEl(track)
 
-      const artistSpan = document.createElement('span')
-      artistSpan.className = 'track-artist'
-      artistSpan.textContent = track.artist
-      li.appendChild(artistSpan)
+        if (data && data.tracks && data.tracks.total > 0) {
+          const spotifyLink = this.getSpotifyLink(data.tracks.items[0])
+          spotifyLink.appendChild(titleSpan)
+          spotifyLink.appendChild(artistSpan)
+          li.appendChild(spotifyLink)
+        } else {
+          li.appendChild(titleSpan)
+          li.appendChild(artistSpan)
+        }
 
-      trackList.appendChild(li)
+        trackList.appendChild(li)
+      })
+      promises.push(promise)
     }
+
+    $.when.apply($, promises).then(() => {
+      console.debug('finished fetching Spotify data')
+      this.enableSpotifyButton(movieTitle, spotifyChoice)
+    })
   },
 
   setupOptionsLink() {
@@ -189,12 +162,15 @@ const imdbSpotterPopup = {
   populatePopup(movieTitle, tracks) {
     console.debug('populatePopup:',
                   tracks.map(t => `${t.title} by ${t.artist}`).join(', '))
-    this.populateTrackList(tracks)
+
+    const tracksetButton = document.getElementById('trackset-button')
+    tracksetButton.removeEventListener('click', this.onSpotifyButtonClick)
+    tracksetButton.style.display = 'none'
 
     chrome.storage.sync.get('imdb_spotter_options', opts => {
       const extensionOpts = opts.imdb_spotter_options || {}
       const spotifyChoice = extensionOpts.spotify || 'web_player'
-      this.setSpotifyLinks(movieTitle, tracks, spotifyChoice)
+      this.populateTrackList(movieTitle, tracks, spotifyChoice)
     });
   },
 
