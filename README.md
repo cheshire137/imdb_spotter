@@ -15,5 +15,6 @@ soundtracks.
 
 ## How to Develop
 
-In Chrome at `chrome://extensions/`, click 'Load unpacked extension...' and
+1. `npm install`
+1. In Chrome at `chrome://extensions/`, click 'Load unpacked extension...' and
 choose the extension/ directory.

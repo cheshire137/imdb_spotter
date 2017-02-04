@@ -1,0 +1,41 @@
+{
+  "name": "imdb_spotter",
+  "productName": "IMDB Spotter",
+  "description": "A Chrome extension for generating a Spotify playlist of movie soundtracks.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cheshire137/imdb_spotter.git"
+  },
+  "author": {
+    "name": "Sarah Vessels",
+    "email": "cheshire137@gmail.com",
+    "url": "http://sarahvessels.com/"
+  },
+  "license": "GPLv3",
+  "scripts": {
+    "test": "npm run-script style",
+    "style": "node_modules/xo/cli.js extension/content_script.js extension/options.js extension/popup.js"
+  },
+  "devDependencies": {
+    "xo": "^0.15.1"
+  },
+  "xo": {
+    "esnext": true,
+    "globals": [
+      "document",
+      "window",
+      "$",
+      "chrome"
+    ],
+    "space": true,
+    "rules": {
+      "space-before-function-paren": 0,
+      "quotes": [2, "single", {"avoidEscape": true}],
+      "dot-location": [2, "object"],
+      "babel/object-curly-spacing": [2, "always"],
+      "camelcase": [2, {"properties": "never"}],
+      "no-new": 0,
+      "no-alert": 0
+    }
+  }
+}
