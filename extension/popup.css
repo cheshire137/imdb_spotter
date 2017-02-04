@@ -8,26 +8,22 @@ body {
   display: inline-block;
 }
 
-#movie-genre, #movie-rating, #movie-year {
+.movie-metadata {
   font-size: 12px;
   color: #999;
+}
+
+.movie-metadata span {
   display: inline-block;
 }
 
-#movie-link {
+.movie-link {
   display: block;
-}
-
-#movie-poster {
-  float: left;
-  max-width: 100px;
-  max-height: 100px;
-  margin: 0 10px 10px 0;
-  border: 1px solid black;
-}
-
-#movie-title {
   font-weight: bold;
+}
+
+.movie-poster {
+  border: 1px solid black;
 }
 
 .separator {
@@ -37,31 +33,42 @@ body {
   font-weight: bold;
 }
 
-#track-list {
+.content .track-list {
+  list-style: none;
+  margin-left: 0;
+}
+
+.track-list {
   font-size: 12px;
 }
 
-#track-list li + li {
-  margin-top: 5px;
-  padding-top: 5px;
-  border-top: 1px solid #ddd;
+.track-list li + li {
+  margin-top: 0.5em;
 }
 
-#track-list .title {
+.track-list .track-title {
   font-size: 14px;
   display: block;
 }
 
-#track-list .artist {
+.track-list .track-artist {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 5px;
   color: #494949;
   text-transform: uppercase;
 }
 
-#trackset-link {
-  margin: 10px 0;
+.track-list .track-artist:before {
+  content: "\2014\a0";
+}
+
+#trackset-button {
+  margin: 1em 0 0 0;
+}
+
+.track-info-area {
+  margin-top: 1em;
 }
 
 #year {
@@ -111,4 +118,24 @@ a {
 
 .spotify-button {
   background-color: #2ebd59;
+  color: #fff;
+}
+
+.columns {
+  display: -webkit-box;
+  display: flex;
+}
+
+.movie-column {
+  -webkit-box-flex: 0;
+  flex: none;
+  width: 25%;
+}
+
+.search-form {
+  margin-bottom: 1em;
+}
+
+.notification:not(:last-child) {
+  margin-bottom: 1em;
 }
