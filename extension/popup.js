@@ -16,21 +16,6 @@
  */
 
 const imdbSpotterPopup = {
-  getSpotifyTrackSearchUrl(query) {
-    return `https://api.spotify.com/v1/search?type=track&q=${encodeURIComponent(query)}`
-  },
-
-  getSpotifyTracksetUrl(name, trackIDs) {
-    console.debug('getSpotifyTracksetUrl', name, trackIDs)
-    const joinedIDs = trackIDs.join(',')
-    return `spotify:trackset:${name}:${joinedIDs}`
-  },
-
-  getSpotifyTracksetWebUrl(name, trackIDs) {
-    const joinedIDs = trackIDs.join(',')
-    return `https://play.spotify.com/trackset/${encodeURIComponent(name)}/${joinedIDs}`
-  },
-
   onSpotifyButtonClick(event) {
     event.preventDefault()
     const link = event.target
@@ -58,28 +43,21 @@ const imdbSpotterPopup = {
 
     const tracksetName = movieTitle
 
-    const tracksetUrl = this.getSpotifyTracksetUrl(tracksetName, trackIDs)
+    const tracksetUrl = SpotifyApi.getSpotifyTracksetUrl(tracksetName, trackIDs)
     tracksetButton.setAttribute('data-app-url', tracksetUrl)
 
-    const webUrl = this.getSpotifyTracksetWebUrl(tracksetName, trackIDs)
+    const webUrl = SpotifyApi.getSpotifyTracksetWebUrl(tracksetName, trackIDs)
     tracksetButton.setAttribute('data-web-url', webUrl)
 
     tracksetButton.addEventListener('click', this.onSpotifyButtonClick)
     tracksetButton.style.display = 'inline-flex'
   },
 
-  getSpotifyTrack(movieTitle, track, spotifyChoice) {
-    const query = `${this.stripPunctuation(track.title)} ${track.artist}`
-    const url = this.getSpotifyTrackSearchUrl(query)
-    console.debug('getSpotifyTrack', url)
-    return $.getJSON(url)
-  },
-
   stripQuotes(str) {
     return str.replace(/"/, "'")
   },
 
-  getSpotifyLink(spotifyTrack) {
+  getSpotifyLink(spotifyTrack, spotifyChoice) {
     const webUrl = spotifyTrack.external_urls.spotify
     const spotifyLink = document.createElement('a')
     spotifyLink.href = webUrl
@@ -124,13 +102,13 @@ const imdbSpotterPopup = {
     const promises = []
 
     for (const track of tracks) {
-      const promise = this.getSpotifyTrack(movieTitle, track, spotifyChoice).then(data => {
+      const promise = SpotifyApi.getSpotifyTrack(track).then(data => {
         const li = document.createElement('li')
         const titleSpan = this.getTrackTitleEl(track)
         const artistSpan = this.getTrackArtistEl(track)
 
         if (data && data.tracks && data.tracks.total > 0) {
-          const spotifyLink = this.getSpotifyLink(data.tracks.items[0])
+          const spotifyLink = this.getSpotifyLink(data.tracks.items[0], spotifyChoice)
           spotifyLink.appendChild(titleSpan)
           spotifyLink.appendChild(artistSpan)
           li.appendChild(spotifyLink)
@@ -212,11 +190,6 @@ const imdbSpotterPopup = {
 
     console.error('could not find artist', songEl)
     return ''
-  },
-
-  stripPunctuation(rawStr) {
-    const str = rawStr.replace(/[\[\]\.,-\/#!$%"\^&\*;:{}=\-_`~()']/g, ' ')
-    return str.replace(/\s+/g, ' ').trim()
   },
 
   getImdbSoundtrack(movieTitle, imdbID) {

@@ -14,7 +14,7 @@
   "license": "GPLv3",
   "scripts": {
     "test": "npm run-script style",
-    "style": "node_modules/xo/cli.js extension/content-script.js extension/options.js extension/popup.js"
+    "style": "node_modules/xo/cli.js extension/content-script.js extension/options.js extension/popup.js extension/spotify-api.js"
   },
   "devDependencies": {
     "xo": "^0.15.1"
@@ -25,7 +25,8 @@
       "document",
       "window",
       "$",
-      "chrome"
+      "chrome",
+      "SpotifyApi"
     ],
     "space": true,
     "rules": {
