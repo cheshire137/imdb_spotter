@@ -6,6 +6,15 @@ a:hover, a:focus {
   color: #00a1e6;
 }
 
+.error {
+  background-color: #ff3860;
+  color: #fff;
+  padding: 5px;
+  margin-bottom: 1em;
+  text-shadow: 0 1px 1px #AF1232;
+  font-size: 14px;
+}
+
 body {
   padding: 10px;
   background-color: #F8F8F8;

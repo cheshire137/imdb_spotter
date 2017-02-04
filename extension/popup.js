@@ -282,6 +282,15 @@ const imdbSpotterPopup = {
     wrapper.style.display = 'block'
   },
 
+  onImdbError(xhr, status, error) {
+    console.error('failed to get IMDB results', xhr.responseText,
+                  `status: ${status}, error: ${error}`)
+    this.toggleSearchFormDisabled(false)
+    const errorEl = document.getElementById('error-message')
+    errorEl.textContent = 'Failed to get IMDB movie info.'
+    errorEl.style.display = 'block'
+  },
+
   searchImdbByTitle() {
     const title = document.getElementById('query').value.trim()
     if (title.length < 1) {
@@ -295,7 +304,8 @@ const imdbSpotterPopup = {
       jsonp: 'callback',
       dataType: 'jsonp',
       data: { t: title, y: year, r: 'json', plot: 'short' },
-      success: data => this.onImdbResults(data)
+      success: data => this.onImdbResults(data),
+      error: (xhr, status, error) => this.onImdbError(xhr, status, error)
     })
   },
 
@@ -306,6 +316,9 @@ const imdbSpotterPopup = {
 
   onSearchSubmit(event) {
     event.preventDefault()
+    const errorEl = document.getElementById('error-message')
+    errorEl.textContent = ''
+    errorEl.style.display = 'none'
     this.toggleSearchFormDisabled(true)
     this.searchImdbByTitle()
   },
