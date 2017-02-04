@@ -231,11 +231,15 @@ const imdbSpotterPopup = {
     })
 
     $.get(url, data => {
+      console.debug(url, data)
       const songEls = $('.soundTrack', $(data))
+      console.log('songEls', songEls)
       const tracks = []
       const addedTracks = []
 
-      songEls.forEach(songEl => {
+      for (let i = 0; i < songEls.length; i++) {
+        const songEl = songEls[i]
+        console.log('songEl', songEl)
         const brs = Array.from(songEl.querySelectorAll('br'))
         const title = brs.map(el => {
           return el.previousSibling.nodeValue
@@ -247,16 +251,40 @@ const imdbSpotterPopup = {
           tracks.push(track)
           addedTracks.push(trackStr)
         }
-      })
+      }
 
       this.populatePopup(tracks)
     })
   },
 
-  onSearch() {
-    const queryField = document.getElementById('query')
-    const query = queryField.value.trim()
-    if (query.length < 1) {
+  onImdbResults(data) {
+    console.debug(data)
+    const wrapper = document.getElementById('movie-details-wrapper')
+    if (!data || data.Response === 'False') {
+      wrapper.style.display = 'none'
+      return
+    }
+
+    document.getElementById('movie-title').textContent = data.Title
+    document.getElementById('movie-genre').textContent = data.Genre
+    document.getElementById('movie-rating').textContent = data.imdbRating
+    document.getElementById('movie-year').textContent = data.Year
+
+    const posterEl = document.getElementById('movie-poster')
+    if (data.Poster === 'N/A') {
+      posterEl.style.display = 'none'
+    } else {
+      posterEl.src = data.Poster
+      posterEl.style.display = 'block'
+    }
+
+    this.getImdbSoundtrack(data.imdbID)
+    wrapper.style.display = 'block'
+  },
+
+  searchImdbByTitle() {
+    const title = document.getElementById('query').value.trim()
+    if (title.length < 1) {
       return
     }
 
@@ -266,52 +294,21 @@ const imdbSpotterPopup = {
       url: 'https://www.omdbapi.com',
       jsonp: 'callback',
       dataType: 'jsonp',
-      data: {
-        t: query, // title
-        y: year,  // year
-        r: 'json',
-        plot: 'short'
-      },
-      success: data => {
-        console.debug(data)
-        const wrapper = document.getElementById('movie-details-wrapper')
-        if (!data || data.Response === 'False') {
-          wrapper.style.display = 'none'
-          return
-        }
-
-        document.getElementById('movie-title').textContent = data.Title
-        document.getElementById('movie-genre').textContent = data.Genre
-        document.getElementById('movie-rating').textContent = data.imdbRating
-        document.getElementById('movie-year').textContent = data.Year
-
-        const posterEl = document.getElementById('movie-poster')
-        if (data.Poster === 'N/A') {
-          posterEl.style.display = 'none'
-        } else {
-          posterEl.src = data.Poster
-          posterEl.style.display = 'block'
-        }
-        this.getImdbSoundtrack(data.imdbID)
-        wrapper.style.display = 'block'
-      }
+      data: { t: title, y: year, r: 'json', plot: 'short' },
+      success: data => this.onImdbResults(data)
     })
   },
 
   setupSearchForm() {
-    document.getElementById('submit').addEventListener('click', () => {
-      this.onSearch()
-    })
-
     document.querySelector('form').addEventListener('submit', e => {
       e.preventDefault()
+      this.searchImdbByTitle()
     })
 
     document.getElementById('query').addEventListener('keypress', e => {
       if (e.which === 13) { // Enter
         e.preventDefault()
-        this.onSearch()
-        return false
+        this.searchImdbByTitle()
       }
     })
   },
