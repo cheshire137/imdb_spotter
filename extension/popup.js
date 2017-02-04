@@ -17,7 +17,7 @@
 
 const imdbSpotterPopup = {
   getSpotifyTrackSearchUrl(query) {
-    return `http://ws.spotify.com/search/1/track.json?q=${encodeURIComponent(query)}`
+    return `https://api.spotify.com/v1/search?type=track&q=${encodeURIComponent(query)}`
   },
 
   getSpotifyTracksetUrl(name, trackIDs) {
