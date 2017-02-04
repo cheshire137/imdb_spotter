@@ -6,64 +6,66 @@
     <link rel="stylesheet" type="text/css" href="popup.css">
   </head>
   <body>
-    <section class="hero is-primary">
-      <div class="hero-body">
-        <div class="container">
-          <h1 class="title has-text-centered">
-            <img src="icon48.png" alt="IMDB Spotter" class="logo">
-            IMDB Spotter
-          </h1>
+    <div id="page-content">
+      <section class="hero is-primary">
+        <div class="hero-body">
+          <div class="container">
+            <h1 class="title has-text-centered">
+              <img src="icon48.png" alt="IMDB Spotter" class="logo">
+              IMDB Spotter
+            </h1>
+          </div>
         </div>
-      </div>
-    </section>
-    <section class="section">
-      <div id="error-message" class="notification is-danger" style="display: none"></div>
-      <form id="search-form" class="search-form">
-        <p class="control">
-          <input type="text" class="input" id="query" placeholder="Movie title">
-        </p>
-        <p class="control">
-          <span class="select">
-            <select id="year"><option value="">Any year</option></select>
-          </span>
-          <button type="submit" id="submit" class="button is-primary">
-            Get Soundtrack
+      </section>
+      <section class="section">
+        <div id="error-message" class="notification is-danger" style="display: none"></div>
+        <form id="search-form" class="search-form">
+          <p class="control">
+            <input type="text" class="input" id="query" placeholder="Movie title">
+          </p>
+          <p class="control">
+            <span class="select">
+              <select id="year"><option value="">Any year</option></select>
+            </span>
+            <button type="submit" id="submit" class="button is-primary">
+              Get Soundtrack
+            </button>
+          </p>
+        </form>
+        <div id="movie-details-wrapper" class="movie-metadata" style="display: none">
+          <div class="columns">
+            <div class="column movie-column">
+              <img src="" alt="Movie poster" id="movie-poster" class="movie-poster">
+            </div>
+            <div class="column">
+              <a href="" id="movie-link" class="movie-link">
+                <span id="movie-title"></span>
+              </a>
+              <span id="movie-year"></span>
+              <span class="separator">&middot;</span>
+              <span id="movie-genre"></span>
+              <span class="separator">&middot;</span>
+              <span id="movie-rating"></span> / 10
+            </div>
+          </div>
+        </div>
+        <div class="track-info-area content">
+          <div id="no-tracks-message" class="notification" style="display: none">
+            No tracks could be found for this soundtrack.
+          </div>
+          <div id="no-spotify-tracks-message" class="notification" style="display: none">
+            No tracks from this soundtrack could be found on Spotify.
+          </div>
+          <button type="button" id="trackset-button" class="spotify-button is-large button" style="display: none">
+            Open in Spotify
           </button>
-        </p>
-      </form>
-      <div id="movie-details-wrapper" class="movie-metadata" style="display: none">
-        <div class="columns">
-          <div class="column movie-column">
-            <img src="" alt="Movie poster" id="movie-poster" class="movie-poster">
-          </div>
-          <div class="column">
-            <a href="" id="movie-link" class="movie-link">
-              <span id="movie-title"></span>
-            </a>
-            <span id="movie-year"></span>
-            <span class="separator">&middot;</span>
-            <span id="movie-genre"></span>
-            <span class="separator">&middot;</span>
-            <span id="movie-rating"></span> / 10
-          </div>
+          <ul id="track-list" class="track-list"></ul>
         </div>
-      </div>
-      <div class="track-info-area content">
-        <div id="no-tracks-message" class="notification" style="display: none">
-          No tracks could be found for this soundtrack.
-        </div>
-        <div id="no-spotify-tracks-message" class="notification" style="display: none">
-          No tracks from this soundtrack could be found on Spotify.
-        </div>
-        <button type="button" id="trackset-button" class="spotify-button is-large button" style="display: none">
-          Open in Spotify
-        </button>
-        <ul id="track-list" class="track-list"></ul>
-      </div>
-    </section>
-    <footer class="footer">
-      <a href="#" id="options-link" title="Change extension settings">Options</a>
-    </footer>
+      </section>
+      <footer class="footer">
+        <a href="#" id="options-link" title="Change extension settings">Options</a>
+      </footer>
+    </div>
     <script src="google-analytics.js"></script>
     <script src="jquery-2.0.3.min.js"></script>
     <script src="spotify-api.js"></script>

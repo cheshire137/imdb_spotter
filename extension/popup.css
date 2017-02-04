@@ -1,7 +1,7 @@
 body {
   min-width: 400px;
   overflow: auto;
-  min-height: 200px;
+  max-height: 600px;
 }
 
 .logo {
