@@ -15,7 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const imdbSpotterPopup = {
+class ImdbSpotterPopup {
+  constructor() {
+    this.tracksetButton = document.getElementById('trackset-button')
+    this.trackList = document.getElementById('track-list')
+    this.noSpotifyTracksMessage = document.getElementById('no-spotify-tracks-message')
+    this.noTracksMessage = document.getElementById('no-tracks-message')
+    this.optionsLink = document.getElementById('options-link')
+    this.movieLink = document.getElementById('movie-link')
+    this.movieDetailsWrapper = document.getElementById('movie-details-wrapper')
+    this.movieTitle = document.getElementById('movie-title')
+    this.movieGenre = document.getElementById('movie-genre')
+    this.movieRating = document.getElementById('movie-rating')
+    this.movieYear = document.getElementById('movie-year')
+    this.moviePoster = document.getElementById('movie-poster')
+    this.errorEl = document.getElementById('error-message')
+    this.queryInput = document.getElementById('query')
+    this.yearInput = document.getElementById('year')
+    this.submitButton = document.getElementById('submit')
+    this.searchForm = document.getElementById('search-form')
+  }
+
   onSpotifyButtonClick(event) {
     event.preventDefault()
     const link = event.target
@@ -27,35 +47,34 @@ const imdbSpotterPopup = {
       url = link.getAttribute('data-web-url')
     }
     chrome.tabs.create({ url })
-  },
+  }
 
   enableSpotifyButton(movieTitle, spotifyChoice) {
-    const tracksetButton = document.getElementById('trackset-button')
-    tracksetButton.setAttribute('data-spotify', spotifyChoice)
+    this.tracksetButton.setAttribute('data-spotify', spotifyChoice)
 
     const trackLinks = Array.from(document.querySelectorAll('.track-link'))
     const trackIDs = trackLinks.map(link => link.getAttribute('data-track-id'))
 
     if (trackIDs.length < 1) {
-      document.getElementById('no-spotify-tracks-message').style.display = 'block'
+      this.noSpotifyTracksMessage.style.display = 'block'
       return
     }
 
     const tracksetName = movieTitle
 
     const tracksetUrl = SpotifyApi.getTracksetUrl(tracksetName, trackIDs)
-    tracksetButton.setAttribute('data-app-url', tracksetUrl)
+    this.tracksetButton.setAttribute('data-app-url', tracksetUrl)
 
     const webUrl = SpotifyApi.getTracksetWebUrl(tracksetName, trackIDs)
-    tracksetButton.setAttribute('data-web-url', webUrl)
+    this.tracksetButton.setAttribute('data-web-url', webUrl)
 
-    tracksetButton.addEventListener('click', this.onSpotifyButtonClick)
-    tracksetButton.style.display = 'inline-flex'
-  },
+    this.tracksetButton.addEventListener('click', this.onSpotifyButtonClick)
+    this.tracksetButton.style.display = 'inline-flex'
+  }
 
   stripQuotes(str) {
     return str.replace(/"/, "'")
-  },
+  }
 
   getSpotifyLink(spotifyTrack, spotifyChoice) {
     const webUrl = spotifyTrack.external_urls.spotify
@@ -72,30 +91,30 @@ const imdbSpotterPopup = {
       }
     })
     return spotifyLink
-  },
+  }
 
   getTrackTitleEl(track) {
     const titleSpan = document.createElement('span')
     titleSpan.className = 'track-title'
     titleSpan.textContent = track.title
     return titleSpan
-  },
+  }
 
   getTrackArtistEl(track) {
     const artistSpan = document.createElement('span')
     artistSpan.className = 'track-artist'
     artistSpan.textContent = track.artist
     return artistSpan
-  },
+  }
 
   populateTrackList(movieTitle, tracks, spotifyChoice) {
-    const trackList = document.getElementById('track-list')
-    while (trackList.hasChildNodes()) {
-      trackList.removeChild(trackList.lastChild)
+    while (this.trackList.hasChildNodes()) {
+      this.trackList.removeChild(this.trackList.lastChild)
     }
 
     if (tracks.length < 1) {
-      document.getElementById('no-tracks-message').style.display = 'block'
+      this.noTracksMessage.style.display = 'block'
+      this.toggleSearchFormDisabled(false)
       return
     }
 
@@ -117,7 +136,7 @@ const imdbSpotterPopup = {
           li.appendChild(artistSpan)
         }
 
-        trackList.appendChild(li)
+        this.trackList.appendChild(li)
       })
       promises.push(promise)
     }
@@ -127,31 +146,29 @@ const imdbSpotterPopup = {
       this.toggleSearchFormDisabled(false)
       this.enableSpotifyButton(movieTitle, spotifyChoice)
     })
-  },
+  }
 
   setupOptionsLink() {
-    const link = document.getElementById('options-link')
-    link.addEventListener('click', event => {
+    this.optionsLink.addEventListener('click', event => {
       event.preventDefault()
       const url = chrome.extension.getURL('options.html')
       chrome.tabs.create({ url })
     })
-  },
+  }
 
   populatePopup(movieTitle, tracks) {
     console.debug('populatePopup:',
                   tracks.map(t => `${t.title} by ${t.artist}`).join(', '))
 
-    const tracksetButton = document.getElementById('trackset-button')
-    tracksetButton.removeEventListener('click', this.onSpotifyButtonClick)
-    tracksetButton.style.display = 'none'
+    this.tracksetButton.removeEventListener('click', this.onSpotifyButtonClick)
+    this.tracksetButton.style.display = 'none'
 
     chrome.storage.sync.get('imdb_spotter_options', opts => {
       const extensionOpts = opts.imdb_spotter_options || {}
       const spotifyChoice = extensionOpts.spotify || 'web_player'
       this.populateTrackList(movieTitle, tracks, spotifyChoice)
     });
-  },
+  }
 
   getArtist(songEl) {
     const links = Array.from(songEl.querySelectorAll('a'))
@@ -194,14 +211,13 @@ const imdbSpotterPopup = {
 
     console.error('could not find artist', songEl)
     return ''
-  },
+  }
 
   getImdbSoundtrack(movieTitle, imdbID) {
     const url = `http://www.imdb.com/title/${imdbID}/soundtrack`
 
-    const movieLink = document.getElementById('movie-link')
-    movieLink.href = url
-    movieLink.addEventListener('click', event => {
+    this.movieLink.href = url
+    this.movieLink.addEventListener('click', event => {
       event.preventDefault()
       chrome.tabs.create({ url })
     })
@@ -226,47 +242,44 @@ const imdbSpotterPopup = {
 
       this.populatePopup(movieTitle, tracks)
     })
-  },
+  }
 
   onImdbResults(data) {
-    const wrapper = document.getElementById('movie-details-wrapper')
     if (!data || data.Response === 'False') {
-      wrapper.style.display = 'none'
+      this.movieDetailsWrapper.style.display = 'none'
       return
     }
 
-    document.getElementById('movie-title').textContent = data.Title
-    document.getElementById('movie-genre').textContent = data.Genre
-    document.getElementById('movie-rating').textContent = data.imdbRating
-    document.getElementById('movie-year').textContent = data.Year
+    this.movieTitle.textContent = data.Title
+    this.movieGenre.textContent = data.Genre
+    this.movieRating.textContent = data.imdbRating
+    this.movieYear.textContent = data.Year
 
-    const posterEl = document.getElementById('movie-poster')
     if (data.Poster === 'N/A') {
-      posterEl.style.display = 'none'
+      this.moviePoster.style.display = 'none'
     } else {
-      posterEl.src = data.Poster
-      posterEl.style.display = 'block'
+      this.moviePoster.src = data.Poster
+      this.moviePoster.style.display = 'block'
     }
 
     this.getImdbSoundtrack(data.Title, data.imdbID)
-    wrapper.style.display = 'block'
-  },
+    this.movieDetailsWrapper.style.display = 'block'
+  }
 
   onImdbError(xhr, status, error) {
     console.error('failed to get IMDB results', `status: ${status}, error: ${error}`)
     this.toggleSearchFormDisabled(false)
-    const errorEl = document.getElementById('error-message')
-    errorEl.textContent = 'Failed to get IMDB movie info.'
-    errorEl.style.display = 'block'
-  },
+    this.errorEl.textContent = 'Failed to get IMDB movie info.'
+    this.errorEl.style.display = 'block'
+  }
 
   searchImdbByTitle() {
-    const title = document.getElementById('query').value.trim()
+    const title = this.queryInput.value.trim()
     if (title.length < 1) {
       return
     }
 
-    const year = document.getElementById('year').value
+    const year = this.yearInput.value
 
     $.ajax({
       url: 'https://www.omdbapi.com',
@@ -276,63 +289,62 @@ const imdbSpotterPopup = {
       success: data => this.onImdbResults(data),
       error: (xhr, status, error) => this.onImdbError(xhr, status, error)
     })
-  },
+  }
 
   toggleSearchFormDisabled(disabled) {
-    document.getElementById('submit').disabled = disabled
-    document.getElementById('query').disabled = disabled
-    document.getElementById('year').disabled = disabled
-  },
+    this.submitButton.disabled = disabled
+    this.queryInput.disabled = disabled
+    this.yearInput.disabled = disabled
+  }
 
   loadFormData() {
     const query = ImdbLocalStorage.get('query')
     if (query && query.length > 0) {
-      document.getElementById('query').value = query
+      this.queryInput.value = query
     }
 
     const year = ImdbLocalStorage.get('year')
     if (year && year.length > 0) {
-      const select = document.getElementById('year')
+      const select = this.yearInput
       const option = select.querySelector(`option[value="${year}"]`)
       if (option) {
         option.selected = 'selected'
       }
     }
-  },
+  }
 
   saveFormData() {
-    const query = document.getElementById('query').value.trim()
-    const year = document.getElementById('year').value
+    const query = this.queryInput.value.trim()
+    const year = this.yearInput.value
     ImdbLocalStorage.set('query', query)
     ImdbLocalStorage.set('year', year)
-  },
+  }
 
   onSearchSubmit(event) {
     event.preventDefault()
-    const errorEl = document.getElementById('error-message')
-    errorEl.textContent = ''
-    errorEl.style.display = 'none'
-    document.getElementById('no-tracks-message').style.display = 'none'
-    document.getElementById('no-spotify-tracks-message').style.display = 'none'
+    this.errorEl.textContent = ''
+    this.errorEl.style.display = 'none'
+    this.noTracksMessage.style.display = 'none'
+    this.noSpotifyTracksMessage.style.display = 'none'
     this.toggleSearchFormDisabled(true)
     this.saveFormData()
     this.searchImdbByTitle()
-  },
+  }
 
   setupSearchForm() {
-    document.getElementById('search-form').addEventListener('submit', e => {
+    this.searchForm.addEventListener('submit', e => {
       this.onSearchSubmit(e)
     })
 
-    document.getElementById('query').addEventListener('keypress', e => {
+    this.queryInput.addEventListener('keypress', e => {
       if (e.which === 13) { // Enter
         this.onSearchSubmit(e)
       }
     })
-  },
+  }
 
   populateYearsSelect() {
-    const select = document.getElementById('year')
+    const select = this.yearInput
     const currentYear = new Date().getFullYear()
     for (let year = currentYear; year >= 1899; year--) {
       const option = document.createElement('option')
@@ -340,7 +352,7 @@ const imdbSpotterPopup = {
       option.textContent = year
       select.appendChild(option)
     }
-  },
+  }
 
   onPopupOpened() {
     console.debug('popup opened')
@@ -356,7 +368,10 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.tabs.sendRequest(
       tab.id,
       { greeting: 'popup_opened', tab_id: tab.id },
-      () => imdbSpotterPopup.onPopupOpened()
+      () => {
+        const popup = new ImdbSpotterPopup()
+        popup.onPopupOpened()
+      }
     )
   })
 })
