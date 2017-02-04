@@ -1,6 +1,7 @@
 # IMDB Spotter
 
-Chrome extension for generating a Spotify playlist of movie soundtracks.
+A work-in-progress Chrome extension for generating a Spotify playlist of movie
+soundtracks.
 
 ## Screenshots
 
