@@ -51,6 +51,10 @@ body {
   margin-top: 0.5em;
 }
 
+.track-link {
+  display: block;
+}
+
 .track-list .track-title {
   font-size: 14px;
 }
@@ -58,7 +62,6 @@ body {
 .track-list .track-artist {
   font-size: 12px;
   margin-top: 5px;
-  color: #494949;
   text-transform: uppercase;
 }
 
@@ -87,6 +90,11 @@ body {
 
 a {
   color: #cc9933;
+}
+
+a:hover,
+a:focus {
+  color: #e4b923;
 }
 
 .button.is-primary {
