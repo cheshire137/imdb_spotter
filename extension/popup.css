@@ -38,10 +38,13 @@ body {
 .content .track-list {
   list-style: none;
   margin-left: 0;
+  margin-right: 0;
 }
 
 .track-list {
   font-size: 12px;
+  max-height: 200px;
+  overflow: auto;
 }
 
 .track-list li + li {

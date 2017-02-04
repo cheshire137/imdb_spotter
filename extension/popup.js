@@ -455,7 +455,3 @@ document.addEventListener('DOMContentLoaded', () => {
     )
   })
 })
-
-window.setTimeout(() => {
-  document.body.style.minHeight = `${screen.height}px`
-}, 150)
