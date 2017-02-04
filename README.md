@@ -9,10 +9,6 @@ soundtracks.
 
 ![Screenshot 2 of IMDB Spotter](https://raw.githubusercontent.com/cheshire137/imdb_spotter/master/screenshot2.png)
 
-## To-do List
-
-* Add context menu so when you select a movie title, right-click, and choose an IMDB Spotter option, it will get the playlist for you.
-
 ## How to Develop
 
 1. `npm install`
