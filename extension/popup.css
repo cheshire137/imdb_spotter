@@ -43,7 +43,7 @@ body {
 
 .track-list {
   font-size: 12px;
-  max-height: 200px;
+  max-height: 11em;
   overflow: auto;
 }
 
@@ -53,11 +53,9 @@ body {
 
 .track-list .track-title {
   font-size: 14px;
-  display: block;
 }
 
 .track-list .track-artist {
-  display: block;
   font-size: 12px;
   margin-top: 5px;
   color: #494949;
@@ -65,7 +63,7 @@ body {
 }
 
 .track-list .track-artist:before {
-  content: "\2014\a0";
+  content: "\a0\2014\a0";
 }
 
 .track-info-area {
@@ -115,6 +113,7 @@ a {
 .spotify-button {
   background-color: #2ebd59;
   color: #fff;
+  margin-top: 1em;
   border-color: transparent;
   -webkit-transition: background-color 86ms ease-out;
   transition: background-color 86ms ease-out;
