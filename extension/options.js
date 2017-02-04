@@ -25,7 +25,7 @@ function saveOptions(event) {
 
   chrome.storage.sync.set(opts, () => {
     const statusArea = document.getElementById('status-message')
-    statusArea.textContent = 'Okay, got it!'
+    statusArea.textContent = 'Saved your settings!'
     $(statusArea).fadeIn(() => setTimeout(() => $(statusArea).fadeOut(), 2000))
   })
 }

@@ -1,7 +1,14 @@
 #status-message {
   position: absolute;
-  width: 100%;
-  top: 2.3em;
+  z-index: 1;
+  width: 400px;
+  left: 50%;
+  margin-left: -200px;
+  margin-top: -1.5rem;
+}
+
+.column {
+  position: relative;
 }
 
 body {
@@ -12,4 +19,27 @@ body {
 
 .main {
   flex: 1 0 auto;
+}
+
+.separator {
+  margin: 0 1em;
+  display: inline-block;
+}
+
+.logo {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.hero.is-primary {
+  background-color: #eccb3f;
+}
+
+.notification {
+  padding: 1rem 2.25rem 1rem 1.25rem;
+}
+
+a {
+  color: #cc9933;
 }
