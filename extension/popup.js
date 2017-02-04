@@ -171,6 +171,7 @@ const imdbSpotterPopup = {
   },
 
   populatePopup(tracks) {
+    console.debug('populatePopup', tracks)
     this.populateTrackList(tracks)
 
     chrome.storage.sync.get('imdb_spotter_options', opts => {
@@ -181,6 +182,7 @@ const imdbSpotterPopup = {
   },
 
   getArtist(songEl) {
+    console.debug('getArtist', songEl)
     const links = Array.from(songEl.querySelectorAll('a'))
 
     let artist = links.map(el => {
@@ -258,35 +260,41 @@ const imdbSpotterPopup = {
       return
     }
 
-    const yearField = document.getElementById('year')
-    const year = yearField.value.trim()
+    const year = document.getElementById('year').value.trim()
 
-    let url = `http://www.omdbapi.com/?t=${encodeURIComponent(query)}`
-    if (year.length > 0) {
-      url += `&y=${encodeURIComponent(year)}`
-    }
+    $.ajax({
+      url: 'https://www.omdbapi.com',
+      jsonp: 'callback',
+      dataType: 'jsonp',
+      data: {
+        t: query, // title
+        y: year,  // year
+        r: 'json',
+        plot: 'short'
+      },
+      success: data => {
+        console.debug(data)
+        const wrapper = document.getElementById('movie-details-wrapper')
+        if (!data || data.Response === 'False') {
+          wrapper.style.display = 'none'
+          return
+        }
 
-    $.getJSON(url, data => {
-      const wrapper = document.getElementById('movie-details-wrapper')
-      if (!data || data.Response === 'False') {
-        wrapper.style.display = 'none'
-        return
+        document.getElementById('movie-title').textContent = data.Title
+        document.getElementById('movie-genre').textContent = data.Genre
+        document.getElementById('movie-rating').textContent = data.imdbRating
+        document.getElementById('movie-year').textContent = data.Year
+
+        const posterEl = document.getElementById('movie-poster')
+        if (data.Poster === 'N/A') {
+          posterEl.style.display = 'none'
+        } else {
+          posterEl.src = data.Poster
+          posterEl.style.display = 'block'
+        }
+        this.getImdbSoundtrack(data.imdbID)
+        wrapper.style.display = 'block'
       }
-
-      document.getElementById('movie-title').textContent = data.Title
-      document.getElementById('movie-genre').textContent = data.Genre
-      document.getElementById('movie-rating').textContent = data.imdbRating
-      document.getElementById('movie-year').textContent = data.Year
-
-      const posterEl = document.getElementById('movie-poster')
-      if (data.Poster === 'N/A') {
-        posterEl.style.display = 'none'
-      } else {
-        posterEl.src = data.Poster
-        posterEl.style.display = 'block'
-      }
-      this.getImdbSoundtrack(data.imdbID)
-      wrapper.style.display = 'block'
     })
   },
 
@@ -309,6 +317,7 @@ const imdbSpotterPopup = {
   },
 
   onPopupOpened() {
+    console.debug('popup opened')
     this.setupOptionsLink()
     this.setupSearchForm()
   }
