@@ -124,16 +124,23 @@ class ImdbSpotterPopup {
       const promise = SpotifyApi.getTrack(track).then(data => {
         const li = document.createElement('li')
         const titleSpan = this.getTrackTitleEl(track)
-        const artistSpan = this.getTrackArtistEl(track)
+        let artistSpan = null
+        if (track.artist && track.artist.length > 0) {
+          artistSpan = this.getTrackArtistEl(track)
+        }
 
         if (data && data.tracks && data.tracks.total > 0) {
           const spotifyLink = this.getSpotifyLink(data.tracks.items[0], spotifyChoice)
           spotifyLink.appendChild(titleSpan)
-          spotifyLink.appendChild(artistSpan)
+          if (artistSpan) {
+            spotifyLink.appendChild(artistSpan)
+          }
           li.appendChild(spotifyLink)
         } else {
           li.appendChild(titleSpan)
-          li.appendChild(artistSpan)
+          if (artistSpan) {
+            li.appendChild(artistSpan)
+          }
         }
 
         this.trackList.appendChild(li)
