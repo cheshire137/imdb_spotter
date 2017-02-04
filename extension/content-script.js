@@ -16,14 +16,14 @@
  */
 
 const imdbSpotter = {
-  onPopupOpened: function(tabID, callback) {
+  onPopupOpened: (tabID, callback) => {
     callback()
   }
 }
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+chrome.extension.onRequest.addListener((request, sender, sendResponse) => {
   if (request.greeting === 'popup_opened') {
-    imdbSpotter.onPopupOpened(request.tab_id, function() {
+    imdbSpotter.onPopupOpened(request.tab_id, () => {
       sendResponse()
     })
   }

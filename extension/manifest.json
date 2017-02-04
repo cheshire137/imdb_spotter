@@ -10,7 +10,7 @@
     {
       "all_frames": true,
       "matches": ["*://*.imdb.com/*"],
-      "js": ["jquery-2.0.3.min.js", "content_script.js"]
+      "js": ["jquery-2.0.3.min.js", "content-script.js"]
     }
   ],
   "options_page": "options.html",
