@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Sarah Vessels
+ * Copyright 2017 Sarah Vessels
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
