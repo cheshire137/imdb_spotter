@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function saveOptions(event) {
-  console.log('saveOptions', event.target)
-  const input = document.querySelector('input[name="spotify"]:checked')
-  const spotify = input.value
-  const statusArea = document.getElementById('status-message')
-  const options = { spotify: spotify }
+const optionsKey = 'imdb_spotter_options'
 
-  chrome.storage.sync.set({'imdb_spotter_options': options}, function() {
+function saveOptions(event) {
+  const spotifyChoice = event.target.value
+  const extensionOpts = { spotify: spotifyChoice }
+  const opts = {}
+  opts[optionsKey] = extensionOpts
+
+  chrome.storage.sync.set(opts, function() {
+    const statusArea = document.getElementById('status-message')
     statusArea.textContent = 'Okay, got it!'
     $(statusArea).fadeIn(function() {
       setTimeout(() => $(statusArea).fadeOut(), 2000)
@@ -30,22 +32,28 @@ function saveOptions(event) {
   })
 }
 
-function restoreOptions() {
-  chrome.storage.sync.get('imdb_spotter_options', function(opts) {
-    const extensionOpts = opts.imdb_spotter_options || {}
+function restoreSpotifyOption(extensionOpts) {
+  const spotifyChoice = extensionOpts.spotify
+  let input
+  if (spotifyChoice) {
+    const selector = `input[name="spotify"][value="${spotifyChoice}"]`
+    input = document.querySelector(selector)
+  } else {
+    input = document.getElementById('web_player')
+  }
+  input.checked = true
+}
 
-    if (extensionOpts.spotify) {
-      const selector = `input[name="spotify"][value="${extensionOpts.spotify}"]`
-      const input = document.querySelector(selector)
-      input.checked = true
-    } else {
-      const player = document.getElementById('web_player')
-      player.checked = true
-    }
+function restoreOptions() {
+  chrome.storage.sync.get(optionsKey, function(opts) {
+    const extensionOpts = opts.imdb_spotter_options || {}
+    restoreSpotifyOption(extensionOpts)
   })
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions)
 
-const spotifyInput = document.querySelector('input[name="spotify"]')
-spotifyInput.addEventListener('change', saveOptions)
+const spotifyInputs = Array.from(document.querySelectorAll('input[name="spotify"]'))
+for (const spotifyInput of spotifyInputs) {
+  spotifyInput.addEventListener('change', saveOptions)
+}
