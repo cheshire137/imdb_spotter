@@ -214,7 +214,7 @@ const imdbSpotterPopup = {
 
   stripPunctuation: function(rawStr) {
     const str = rawStr.replace(/[\[\]\.,-\/#!$%"\^&\*;:{}=\-_`~()']/g, ' ');
-    return str.replace(/\s+/g, ' ')).trim()
+    return str.replace(/\s+/g, ' ').trim()
   },
 
   getImdbSoundtrack: function(imdbID) {
