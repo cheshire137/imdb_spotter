@@ -5,37 +5,47 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.3.1/css/bulma.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="options.css">
   </head>
-  <body class="options">
-    <div class="container">
-      <div class="header">
-        <img src="icon48.png" width="48" height="48" alt="IMDB Spotter logo" class="pull-left logo">
-        <h1>IMDB Spotter Options</h1>
-        <hr>
-      </div>
-      <p id="status-message" class="hidden alert"></p>
-      <fieldset>
-        <legend>How to Use Spotify</legend>
-        <div class="controls">
-          <label for="web_player">
-            <input type="radio" name="spotify" id="web_player" value="web_player">
-            Web player (default)
-          </label>
-          <label for="desktop_application">
-            <input type="radio" name="spotify" id="desktop_application" value="desktop_application">
-            Desktop application
-          </label>
+  <body>
+    <section class="hero is-primary">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title has-text-centered">
+            <img src="icon48.png" width="48" height="48" alt="IMDB Spotter logo" class="pull-left logo">
+            IMDB Spotter Options
+          </h1>
         </div>
-        <p class="help-block">
-          Choose how to open Spotify links.
-        </p>
-      </fieldset>
-      <div class="footer">
-        <hr>
-        &copy; 2013 Sarah Vessels
-        <span>&middot;</span>
-        <a href="https://github.com/moneypenny/imdb_spotter">View source code</a>
       </div>
-    </div>
+    </section>
+    <section class="section main">
+      <div class="container">
+        <p id="status-message" class="hidden alert"></p>
+        <div class="columns">
+          <div class="column is-half is-offset-one-quarter">
+            <h2 class="subtitle">Spotify Player</h2>
+            <p class="control">
+              <label for="web_player" class="radio">
+                <input type="radio" name="spotify" id="web_player" value="web_player">
+                Web player (default)
+              </label>
+              <label for="desktop_application" class="radio">
+                <input type="radio" name="spotify" id="desktop_application" value="desktop_application">
+                Desktop app
+              </label>
+            </p>
+            <span class="help">Choose how to open Spotify links.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      <div class="container">
+        <div class="content has-text-centered">
+          Built by Sarah &hearts;
+          <span>&middot;</span>
+          <a href="https://github.com/cheshire137/imdb_spotter">View source on GitHub</a>
+        </div>
+      </div>
+    </footer>
     <script src="jquery-2.0.3.min.js"></script>
     <script src="options.js"></script>
   </body>
