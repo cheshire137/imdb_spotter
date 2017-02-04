@@ -15,6 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+function afterContentChanged() {
+  document.documentElement.style.boxSizing = 'initial'
+  setTimeout(() => {
+    document.documentElement.style.boxSizing = 'border-box'
+  }, 50)
+}
+
 class ImdbSpotterPopup {
   constructor() {
     this.artistPrefixes = ['Performed by', 'Written and performed by', 'Written by',
@@ -178,6 +185,7 @@ class ImdbSpotterPopup {
       console.debug('finished fetching Spotify data')
       this.toggleSearchFormDisabled(false)
       this.enableSpotifyButton(movieTitle, spotifyChoice)
+      afterContentChanged()
     })
   }
 
@@ -461,6 +469,7 @@ class ImdbSpotterPopup {
     this.setupOptionsLink()
     this.setupMovieLink()
     this.setupSearchForm()
+    afterContentChanged()
   }
 }
 
@@ -477,7 +486,4 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 })
 
-window.setTimeout(() => {
-  document.documentElement.style.boxSizing = 'initial'
-  document.documentElement.style.boxSizing = 'border-box'
-}, 150)
+window.setTimeout(afterContentChanged, 150)
