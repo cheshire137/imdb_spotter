@@ -130,7 +130,7 @@ const imdbSpotterPopup = {
   },
 
   setupOptionsLink() {
-    const link = document.querySelector('a[href="#options"]')
+    const link = document.getElementById('options-link')
     link.addEventListener('click', event => {
       event.preventDefault()
       const url = chrome.extension.getURL('options.html')
