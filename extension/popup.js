@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function resizePopup() {
-  const target = document.getElementById('page-content')
-  console.log('resizing', target.clientWidth, target.clientHeight)
-  document.body.style.width = `${target.clientWidth}px`
-  document.body.style.height = `${target.clientHeight}px`
-}
-
 class ImdbSpotterPopup {
   constructor() {
     this.tracksetButton = document.getElementById('trackset-button')
@@ -159,7 +152,6 @@ class ImdbSpotterPopup {
       console.debug('finished fetching Spotify data')
       this.toggleSearchFormDisabled(false)
       this.enableSpotifyButton(movieTitle, spotifyChoice)
-      resizePopup()
     })
   }
 
@@ -440,7 +432,6 @@ class ImdbSpotterPopup {
     this.loadImdbTracks()
     this.setupOptionsLink()
     this.setupSearchForm()
-    resizePopup()
   }
 }
 
@@ -456,5 +447,3 @@ document.addEventListener('DOMContentLoaded', () => {
     )
   })
 })
-
-window.setTimeout(resizePopup, 100)
