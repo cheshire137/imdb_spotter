@@ -128,6 +128,8 @@ const imdbSpotterPopup = {
     for (let i = 0; i < numTracks; i++) {
       this.setTrackLink(tracks[i], i === numTracks - 1, spotifyChoice)
     }
+
+    this.toggleSearchFormDisabled(false)
   },
 
   stripQuotes(str) {
@@ -233,13 +235,11 @@ const imdbSpotterPopup = {
     $.get(url, data => {
       console.debug(url, data)
       const songEls = $('.soundTrack', $(data))
-      console.log('songEls', songEls)
       const tracks = []
       const addedTracks = []
 
       for (let i = 0; i < songEls.length; i++) {
         const songEl = songEls[i]
-        console.log('songEl', songEl)
         const brs = Array.from(songEl.querySelectorAll('br'))
         const title = brs.map(el => {
           return el.previousSibling.nodeValue
@@ -299,16 +299,25 @@ const imdbSpotterPopup = {
     })
   },
 
+  toggleSearchFormDisabled(disabled) {
+    document.getElementById('submit').disabled = disabled
+    document.getElementById('query').disabled = disabled
+  },
+
+  onSearchSubmit(event) {
+    event.preventDefault()
+    this.toggleSearchFormDisabled(true)
+    this.searchImdbByTitle()
+  },
+
   setupSearchForm() {
-    document.querySelector('form').addEventListener('submit', e => {
-      e.preventDefault()
-      this.searchImdbByTitle()
+    document.getElementById('search-form').addEventListener('submit', e => {
+      this.onSearchSubmit(e)
     })
 
     document.getElementById('query').addEventListener('keypress', e => {
       if (e.which === 13) { // Enter
-        e.preventDefault()
-        this.searchImdbByTitle()
+        this.onSearchSubmit(e)
       }
     })
   },

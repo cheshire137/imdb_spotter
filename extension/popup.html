@@ -4,7 +4,6 @@
     <title>IMDB Spotter Extension Popup</title>
     <link rel="stylesheet" type="text/css" href="reset.css">
     <link rel="stylesheet" type="text/css" href="popup.css">
-    <script src="jquery-2.0.3.min.js"></script>
   </head>
   <body>
     <div id="page">
@@ -12,8 +11,8 @@
         <img src="icon48.png" alt="IMDB Spotter" id="logo">
         IMDB Spotter
       </h1>
-      <form>
-        <input type="text" id="query" placeholder="movie title">
+      <form id="search-form">
+        <input type="text" id="query" placeholder="Movie title">
         <button type="submit" id="submit" class="btn">
           Get Soundtrack
         </button>
@@ -150,8 +149,7 @@
         <span id="movie-rating"></span>
       </div>
       <a href="#open-tracklist" id="trackset-link" class="hidden btn">Open in Spotify</a>
-      <ul id="track-list">
-      </ul>
+      <ul id="track-list"></ul>
       <footer>
         <small>
           <a href="#options" title="Change extension settings">Options</a>
@@ -159,6 +157,7 @@
       </footer>
     </div>
     <script src="google-analytics.js"></script>
+    <script src="jquery-2.0.3.min.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>
