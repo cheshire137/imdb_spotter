@@ -47,6 +47,12 @@ body {
   overflow: auto;
 }
 
+.track-list li {
+  text-indent: -35px;
+  padding-left: 35px;
+  line-height: 1.3;
+}
+
 .track-list li + li {
   margin-top: 0.5em;
 }
@@ -57,6 +63,20 @@ body {
 
 .track-list .track-title {
   font-size: 14px;
+}
+
+.track-list .track-icon-placeholder,
+.track-list .track-image {
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
+  width: 30px;
+  border-radius: 2px;
+}
+
+.track-list .track-icon-placeholder {
+  background-color: #ddd;
+  height: 30px;
 }
 
 .track-list .track-artist {

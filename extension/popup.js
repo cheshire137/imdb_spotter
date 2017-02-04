@@ -80,6 +80,7 @@ class ImdbSpotterPopup {
 
   getSpotifyLink(spotifyTrack, spotifyChoice) {
     const webUrl = spotifyTrack.external_urls.spotify
+
     const spotifyLink = document.createElement('a')
     spotifyLink.href = webUrl
     spotifyLink.setAttribute('data-track-id', spotifyTrack.id)
@@ -92,6 +93,26 @@ class ImdbSpotterPopup {
         chrome.tabs.create({ url: webUrl })
       }
     })
+
+    let foundImage = false
+    if (spotifyTrack.album && spotifyTrack.album.images &&
+        spotifyTrack.album.images.length > 0) {
+      const image = spotifyTrack.album.images.filter(img => img.width < 100)[0]
+      if (image) {
+        const icon = document.createElement('img')
+        icon.src = image.url
+        icon.className = 'track-image'
+        spotifyLink.appendChild(icon)
+        foundImage = true
+      }
+    }
+
+    if (!foundImage) {
+      const iconPlaceholder = document.createElement('span')
+      iconPlaceholder.className = 'track-icon-placeholder'
+      spotifyLink.appendChild(iconPlaceholder)
+    }
+
     return spotifyLink
   }
 
@@ -139,6 +160,9 @@ class ImdbSpotterPopup {
           }
           li.appendChild(spotifyLink)
         } else {
+          const iconPlaceholder = document.createElement('span')
+          iconPlaceholder.className = 'track-icon-placeholder'
+          li.appendChild(iconPlaceholder)
           li.appendChild(titleSpan)
           if (artistSpan) {
             li.appendChild(artistSpan)
