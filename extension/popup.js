@@ -177,8 +177,26 @@ class ImdbSpotterPopup {
     });
   }
 
-  getArtist(songEl) {
+  getArtistFromText(lines) {
+    const targets = ['Performed by ', 'Written and performed by ', 'Written by ',
+                     'Music by ', 'Composed by ', 'Music and lyrics by ']
+    for (const target of targets) {
+      for (const line of lines) {
+        if (line.indexOf(target) > -1) {
+          return line.split(target)[1].trim()
+        }
+      }
+    }
+    return ''
+  }
+
+  getArtist(songEl, brs) {
     const links = Array.from(songEl.querySelectorAll('a'))
+
+    if (links.length < 1) {
+      const lines = brs.map(el => el.previousSibling.nodeValue)
+      return this.getArtistFromText(lines)
+    }
 
     let artist = links.map(el => {
       const precedingText = el.previousSibling.nodeValue.trim()
@@ -234,7 +252,7 @@ class ImdbSpotterPopup {
         const songEl = songEls[i]
         const brs = Array.from(songEl.querySelectorAll('br'))
         const title = brs.map(el => el.previousSibling.nodeValue)[0].trim()
-        const artist = this.getArtist(songEl)
+        const artist = this.getArtist(songEl, brs)
         const track = { title, artist }
         const trackStr = `${title} ${artist}`
         if (addedTracks.indexOf(trackStr) < 0) {
