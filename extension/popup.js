@@ -179,6 +179,9 @@ const imdbSpotterPopup = {
       if (precedingText.indexOf('Music by') > -1) {
         return el.textContent
       }
+      if (precedingText.indexOf('Composed by') > -1) {
+        return el.textContent
+      }
       if (precedingText.indexOf('Music and lyrics by') > -1) {
         return el.textContent
       }
