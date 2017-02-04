@@ -334,8 +334,20 @@ const imdbSpotterPopup = {
     })
   },
 
+  populateYearsSelect() {
+    const select = document.getElementById('year')
+    const currentYear = new Date().getFullYear()
+    for (let year = currentYear; year >= 1899; year--) {
+      const option = document.createElement('option')
+      option.value = year
+      option.textContent = year
+      select.appendChild(option)
+    }
+  },
+
   onPopupOpened() {
     console.debug('popup opened')
+    this.populateYearsSelect()
     this.setupOptionsLink()
     this.setupSearchForm()
   }
