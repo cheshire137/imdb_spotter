@@ -476,3 +476,8 @@ document.addEventListener('DOMContentLoaded', () => {
     )
   })
 })
+
+window.setTimeout(() => {
+  document.documentElement.style.boxSizing = 'initial'
+  document.documentElement.style.boxSizing = 'border-box'
+}, 150)
