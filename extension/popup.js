@@ -17,6 +17,8 @@
 
 class ImdbSpotterPopup {
   constructor() {
+    this.artistPrefixes = ['Performed by', 'Written and performed by', 'Written by',
+                           'Music by', 'Composed by', 'Music and lyrics by']
     this.tracksetButton = document.getElementById('trackset-button')
     this.trackList = document.getElementById('track-list')
     this.noSpotifyTracksMessage = document.getElementById('no-spotify-tracks-message')
@@ -178,15 +180,16 @@ class ImdbSpotterPopup {
   }
 
   getArtistFromText(lines) {
-    const targets = ['Performed by ', 'Written and performed by ', 'Written by ',
-                     'Music by ', 'Composed by ', 'Music and lyrics by ']
-    for (const target of targets) {
+    for (const prefix of this.artistPrefixes) {
       for (const line of lines) {
+        const target = `${prefix} `
         if (line.indexOf(target) > -1) {
           return line.split(target)[1].trim()
         }
       }
     }
+
+    console.error('could not find artist', lines)
     return ''
   }
 
@@ -198,40 +201,16 @@ class ImdbSpotterPopup {
       return this.getArtistFromText(lines)
     }
 
-    let artist = links.map(el => {
-      const precedingText = el.previousSibling.nodeValue.trim()
-      if (precedingText.indexOf('Performed by') > -1) {
-        return el.textContent
+    for (const prefix of this.artistPrefixes) {
+      for (const link of links) {
+        const precedingText = link.previousSibling.nodeValue.trim()
+        if (precedingText.indexOf(prefix) > -1) {
+          const artist = link.textContent.trim()
+          if (artist.length > 0) {
+            return artist
+          }
+        }
       }
-      if (precedingText.indexOf('Written and performed by') > -1) {
-        return el.textContent
-      }
-      return ''
-    })
-    artist = artist.filter(str => str.length > 0)
-    if (artist.length > 0) {
-      return artist[0].trim()
-    }
-
-    artist = links.map(el => {
-      const precedingText = el.previousSibling.nodeValue.trim()
-      if (precedingText.indexOf('Written by') > -1) {
-        return el.textContent
-      }
-      if (precedingText.indexOf('Music by') > -1) {
-        return el.textContent
-      }
-      if (precedingText.indexOf('Composed by') > -1) {
-        return el.textContent
-      }
-      if (precedingText.indexOf('Music and lyrics by') > -1) {
-        return el.textContent
-      }
-      return ''
-    })
-    artist = artist.filter(str => str.length > 0)
-    if (artist.length > 0) {
-      return artist[0].trim()
     }
 
     console.error('could not find artist', songEl)
