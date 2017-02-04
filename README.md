@@ -18,3 +18,4 @@ soundtracks.
 1. `npm install`
 1. In Chrome at `chrome://extensions/`, click 'Load unpacked extension...' and
 choose the extension/ directory.
+1. Run `npm test` to run the style checker.
