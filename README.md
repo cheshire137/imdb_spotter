@@ -12,3 +12,8 @@ soundtracks.
 ## To-do List
 
 * Add context menu so when you select a movie title, right-click, and choose an IMDB Spotter option, it will get the playlist for you.
+
+## How to Develop
+
+In Chrome at `chrome://extensions/`, click 'Load unpacked extension...' and
+choose the extension/ directory.
